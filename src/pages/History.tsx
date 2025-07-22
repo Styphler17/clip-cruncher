@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Search, Download, Trash2, Calendar, FileVideo, Clock } from "lucide-react";
+import { Search, Download, Trash2, Calendar, FileVideo, Clock, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 import {
   Table,
   TableBody,
@@ -53,7 +55,8 @@ const compressionHistory = [
   }
 ];
 
-export default function History() {
+function HistoryContent() {
+  const { toggleSidebar } = useSidebar();
   const [searchTerm, setSearchTerm] = useState("");
   const [history] = useState(compressionHistory);
 
@@ -72,8 +75,22 @@ export default function History() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="flex-1 flex flex-col">
+      {/* Mobile header */}
+      <header className="h-14 border-b bg-background flex items-center px-4 lg:hidden">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={toggleSidebar}
+          className="mr-2"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <h1 className="text-lg font-semibold">History</h1>
+      </header>
+
+      <div className="flex-1 p-4 lg:p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Compression History</h1>
           <p className="text-muted-foreground mt-2">
@@ -200,6 +217,18 @@ export default function History() {
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
+  );
+}
+
+export default function History() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <VideoCompressorSidebar />
+        <HistoryContent />
+      </div>
+    </SidebarProvider>
   );
 }

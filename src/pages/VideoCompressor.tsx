@@ -3,13 +3,14 @@ import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompr
 import { DropZone } from "@/components/video-compressor/DropZone";
 import { CompressionSettings, COMPRESSION_PRESETS } from "@/components/video-compressor/CompressionSettings";
 import { ProgressTracker, CompressionJob } from "@/components/video-compressor/ProgressTracker";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, Pause, Zap, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export default function VideoCompressor() {
+function VideoCompressorContent() {
+  const { toggleSidebar } = useSidebar();
   const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [compressionJobs, setCompressionJobs] = useState<CompressionJob[]>([]);
@@ -183,17 +184,27 @@ export default function VideoCompressor() {
         <VideoCompressorSidebar />
         
         <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+          {/* Mobile header */}
+          <header className="h-14 border-b bg-background flex items-center px-4 lg:hidden">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={toggleSidebar}
+              className="mr-2"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <h1 className="text-lg font-semibold">Clip Cruncher</h1>
+          </header>
+
+          {/* Desktop header */}
+          <header className="hidden lg:block border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
             <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-3">
-                <SidebarTrigger className="md:hidden" />
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">Video Compressor</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Compress videos instantly in your browser
-                  </p>
-                </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Clip Cruncher</h1>
+                <p className="text-sm text-muted-foreground">
+                  Compress videos instantly in your browser
+                </p>
               </div>
               
               <div className="flex items-center gap-2">
@@ -330,6 +341,17 @@ export default function VideoCompressor() {
             </div>
           </main>
         </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
+export default function VideoCompressor() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <VideoCompressorSidebar />
+        <VideoCompressorContent />
       </div>
     </SidebarProvider>
   );

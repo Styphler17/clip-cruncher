@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Play, History, HelpCircle, Info, Menu } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import logoImage from "@/assets/logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -46,18 +47,21 @@ export function VideoCompressorSidebar() {
   const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
+    <Sidebar 
+      className={`${isCollapsed ? "w-16" : "w-64"} hidden lg:flex`} 
+      collapsible="icon"
+    >
       <SidebarContent className="bg-sidebar">
         {/* Logo Section */}
         <div className="p-4 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-video-primary rounded-lg flex items-center justify-center">
-              <Play className="w-5 h-5 text-white" />
+            <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden">
+              <img src={logoImage} alt="Clip Cruncher" className="w-full h-full object-cover" />
             </div>
             {!isCollapsed && (
               <div>
                 <h1 className="text-lg font-bold text-sidebar-foreground">
-                  Video Compressor
+                  Clip Cruncher
                 </h1>
                 <p className="text-xs text-sidebar-foreground/70">
                   Professional Tool

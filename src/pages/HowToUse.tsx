@@ -1,7 +1,10 @@
-import { Upload, Settings, Download, Zap, FileVideo, Clock, HardDrive, Cpu } from "lucide-react";
+import { Upload, Settings, Download, Zap, FileVideo, Clock, HardDrive, Cpu, Menu } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 
 const steps = [
   {
@@ -102,10 +105,26 @@ const tips = [
   }
 ];
 
-export default function HowToUse() {
+function HowToUseContent() {
+  const { toggleSidebar } = useSidebar();
+
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div>
+    <div className="flex-1 flex flex-col">
+      {/* Mobile header */}
+      <header className="h-14 border-b bg-background flex items-center px-4 lg:hidden">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={toggleSidebar}
+          className="mr-2"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <h1 className="text-lg font-semibold">How To Use</h1>
+      </header>
+
+      <div className="flex-1 p-4 lg:p-6 space-y-8">
+        <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">How to Use Video Compressor</h1>
         <p className="text-muted-foreground text-lg">
           Learn how to compress your videos efficiently with our step-by-step guide
@@ -222,6 +241,18 @@ export default function HowToUse() {
           </CardContent>
         </Card>
       </section>
+      </div>
     </div>
+  );
+}
+
+export default function HowToUse() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <VideoCompressorSidebar />
+        <HowToUseContent />
+      </div>
+    </SidebarProvider>
   );
 }

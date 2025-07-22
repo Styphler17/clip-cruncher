@@ -1,8 +1,10 @@
-import { Shield, Zap, Globe, Download, Code, Users, Star, Github } from "lucide-react";
+import { Shield, Zap, Globe, Download, Code, Users, Star, Github, Menu } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 
 const features = [
   {
@@ -48,12 +50,28 @@ const stats = [
   { label: "Privacy Level", value: "100%" }
 ];
 
-export default function About() {
+function AboutContent() {
+  const { toggleSidebar } = useSidebar();
+
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      {/* Hero Section */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-foreground">About Video Compressor</h1>
+    <div className="flex-1 flex flex-col">
+      {/* Mobile header */}
+      <header className="h-14 border-b bg-background flex items-center px-4 lg:hidden">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={toggleSidebar}
+          className="mr-2"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <h1 className="text-lg font-semibold">About</h1>
+      </header>
+
+      <div className="flex-1 p-4 lg:p-6 space-y-8">
+        {/* Hero Section */}
+        <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold text-foreground">About Clip Cruncher</h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           A professional, privacy-focused video compression tool that runs entirely in your browser. 
           No uploads, no registration, no compromises.
@@ -210,12 +228,24 @@ export default function About() {
         </div>
       </section>
 
-      {/* Footer */}
-      <div className="text-center text-sm text-muted-foreground pt-8 border-t">
-        <p>
-          Built with ❤️ for privacy-conscious users who value quality and performance.
-        </p>
+        {/* Footer */}
+        <div className="text-center text-sm text-muted-foreground pt-8 border-t">
+          <p>
+            Built with ❤️ for privacy-conscious users who value quality and performance.
+          </p>
+        </div>
       </div>
     </div>
+  );
+}
+
+export default function About() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <VideoCompressorSidebar />
+        <AboutContent />
+      </div>
+    </SidebarProvider>
   );
 }

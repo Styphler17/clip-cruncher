@@ -1,10 +1,25 @@
 import { useEffect, useState } from "react";
-import { Play, Pause, X, Download, FileVideo, Clock, HardDrive, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { VideoPreview } from "./VideoPreview";
 import { cn } from "@/lib/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faPlay, 
+  faPause, 
+  faDownload, 
+  faRedo, 
+  faTimes, 
+  faExclamationTriangle,
+  faCheckCircle,
+  faClock,
+  faSpinner,
+  faFileVideo,
+  faHdd,
+  faBolt
+} from "@fortawesome/free-solid-svg-icons";
 
 export interface CompressionJob {
   id: string;
@@ -93,7 +108,7 @@ export function ProgressTracker({
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Play className="w-5 h-5 text-video-primary" />
+              <FontAwesomeIcon icon={faPlay} className="text-video-primary" />
               Compression Progress
             </div>
             <div className="flex items-center gap-2 text-sm">
@@ -116,24 +131,24 @@ export function ProgressTracker({
             </div>
             <Progress value={totalProgress} className="h-2" />
             
-            {activeJobs.length > 0 && (
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {activeJobs.length} processing
+              {activeJobs.length > 0 && (
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faClock} />
+                    {activeJobs.length} processing
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FontAwesomeIcon icon={faHdd} />
+                    {formatBytes(jobs.reduce((sum, job) => sum + job.originalSize, 0))} total
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <HardDrive className="w-3 h-3" />
-                  {formatBytes(jobs.reduce((sum, job) => sum + job.originalSize, 0))} total
-                </div>
-              </div>
-            )}
+              )}
           </div>
         </CardContent>
       </Card>
 
       {/* Individual Job Progress */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {jobs.map((job) => {
           const isActive = job.status === 'processing';
           const isCompleted = job.status === 'completed';
@@ -149,135 +164,153 @@ export function ProgressTracker({
             : 0;
 
           return (
-            <Card key={job.id} className={cn(
-              "transition-smooth",
-              isActive && "border-video-primary shadow-md",
-              isCompleted && "border-video-success",
-              isError && "border-video-danger"
-            )}>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                    isCompleted ? "bg-video-success text-white" :
-                    isError ? "bg-video-danger text-white" :
-                    isActive ? "bg-video-primary text-white animate-pulse-glow" :
-                    "bg-video-secondary text-muted-foreground"
-                  )}>
-                    <FileVideo className="w-5 h-5" />
-                  </div>
-
-                  <div className="flex-1 min-w-0 space-y-2">
-                    {/* File Info */}
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <h4 className="font-medium truncate">{job.file.name}</h4>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{formatBytes(job.originalSize)}</span>
-                          <span>•</span>
-                          <span>{job.settings.preset} preset</span>
-                          {job.compressedSize && (
-                            <>
-                              <span>•</span>
-                              <span className="text-video-success">
-                                -{Math.round(compressionRatio)}%
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        {isCompleted && (
-                          <Button
-                            size="sm"
-                            onClick={() => onDownload(job.id)}
-                            className="h-8 px-3"
-                          >
-                            <Download className="w-3 h-3 mr-1" />
-                            Download
-                          </Button>
-                        )}
-                        
-                        {isError && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onRetry(job.id)}
-                            className="h-8 px-3"
-                          >
-                            <Zap className="w-3 h-3 mr-1" />
-                            Retry
-                          </Button>
-                        )}
-
-                        {(isActive || isWaiting) && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onCancelJob(job.id)}
-                            className="h-8 px-3"
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        )}
-                      </div>
+            <div key={job.id} className="space-y-3">
+              <Card className={cn(
+                "transition-smooth",
+                isActive && "border-video-primary shadow-md",
+                isCompleted && "border-video-success",
+                isError && "border-video-danger"
+              )}>
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                      isCompleted ? "bg-video-success text-white" :
+                      isError ? "bg-video-danger text-white" :
+                      isActive ? "bg-video-primary text-white animate-pulse-glow" :
+                      "bg-video-secondary text-muted-foreground"
+                    )}>
+                      {isActive && <FontAwesomeIcon icon={faSpinner} className="animate-spin" />}
+                      {isCompleted && <FontAwesomeIcon icon={faCheckCircle} />}
+                      {isWaiting && <FontAwesomeIcon icon={faClock} />}
+                      {isError && <FontAwesomeIcon icon={faExclamationTriangle} />}
+                      {job.status === 'cancelled' && <FontAwesomeIcon icon={faTimes} />}
                     </div>
 
-                    {/* Progress Bar */}
-                    {!isError && (
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">
-                            {isWaiting ? 'Waiting...' :
-                             isCompleted ? 'Completed' :
-                             `${Math.round(job.progress)}%`}
-                          </span>
-                          {isActive && (
-                            <span className="text-muted-foreground">
-                              ETA: {calculateTimeRemaining(job)}
-                            </span>
-                          )}
-                          {isCompleted && job.startTime && job.endTime && (
-                            <span className="text-muted-foreground">
-                              {formatTime(Math.floor((job.endTime - job.startTime) / 1000))}
-                            </span>
-                          )}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      {/* File Info */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h4 className="font-medium truncate">{job.file.name}</h4>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>Original: {formatBytes(job.originalSize)}</span>
+                            <span>•</span>
+                            <span>{job.settings.preset} preset</span>
+                            {job.compressedSize && (
+                              <>
+                                <span>•</span>
+                                <span className="text-video-success">
+                                  Compressed: {formatBytes(job.compressedSize)} ({Math.round(compressionRatio)}% saved)
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                        <Progress
-                          value={job.progress}
-                          className={cn(
-                            "h-1.5",
-                            isCompleted && "[&>div]:bg-video-success"
-                          )}
-                        />
-                      </div>
-                    )}
 
-                    {/* Error Message */}
-                    {isError && job.error && (
-                      <div className="p-2 bg-video-danger/10 border border-video-danger/20 rounded text-xs text-video-danger">
-                        {job.error}
-                      </div>
-                    )}
-
-                    {/* Completion Stats */}
-                    {isCompleted && job.compressedSize && (
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <HardDrive className="w-3 h-3" />
-                          {formatBytes(job.originalSize)} → {formatBytes(job.compressedSize)}
-                        </div>
-                        <div className="flex items-center gap-1 text-video-success">
-                          <Zap className="w-3 h-3" />
-                          {Math.round(compressionRatio)}% smaller
+                          {isCompleted && (
+                            <Button
+                              size="sm"
+                              onClick={() => onDownload(job.id)}
+                              className="h-8 px-3 bg-video-success hover:bg-video-success/90"
+                            >
+                              <FontAwesomeIcon icon={faDownload} className="mr-1" />
+                              Download
+                            </Button>
+                          )}
+                          
+                          {isError && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onRetry(job.id)}
+                              className="h-8 px-3"
+                            >
+                              <FontAwesomeIcon icon={faRedo} className="mr-1" />
+                              Retry
+                            </Button>
+                          )}
+
+                          {(isActive || isWaiting) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onCancelJob(job.id)}
+                              className="h-8 px-3 text-video-danger hover:text-video-danger hover:bg-video-danger/10"
+                            >
+                              <FontAwesomeIcon icon={faTimes} />
+                            </Button>
+                          )}
                         </div>
                       </div>
-                    )}
+
+                      {/* Progress Bar */}
+                      {!isError && (
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">
+                              {isWaiting ? 'Waiting...' :
+                               isCompleted ? 'Completed' :
+                               `${Math.round(job.progress)}%`}
+                            </span>
+                            {isActive && (
+                              <span className="text-muted-foreground">
+                                ETA: {calculateTimeRemaining(job)}
+                              </span>
+                            )}
+                            {isCompleted && job.startTime && job.endTime && (
+                              <span className="text-muted-foreground">
+                                {formatTime(Math.floor((job.endTime - job.startTime) / 1000))}
+                              </span>
+                            )}
+                          </div>
+                          <Progress
+                            value={job.progress}
+                            className={cn(
+                              "h-1.5",
+                              isCompleted && "[&>div]:bg-video-success"
+                            )}
+                          />
+                        </div>
+                      )}
+
+                      {/* Error Message */}
+                      {isError && job.error && (
+                        <div className="p-2 bg-video-danger/10 border border-video-danger/20 rounded text-xs text-video-danger flex items-center gap-2">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {job.error}
+                        </div>
+                      )}
+
+                      {/* Completion Stats */}
+                      {isCompleted && job.compressedSize && (
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <FontAwesomeIcon icon={faHdd} />
+                            {formatBytes(job.originalSize)} → {formatBytes(job.compressedSize)}
+                          </div>
+                          <div className="flex items-center gap-1 text-video-success">
+                            <FontAwesomeIcon icon={faBolt} />
+                            {Math.round(compressionRatio)}% smaller
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              {/* Video Preview for Completed Jobs */}
+              {isCompleted && job.outputBlob && (
+                <VideoPreview
+                  originalFile={job.file}
+                  compressedBlob={job.outputBlob}
+                  originalSize={job.originalSize}
+                  compressedSize={job.compressedSize}
+                  onDownload={() => onDownload(job.id)}
+                />
+              )}
+            </div>
           );
         })}
       </div>

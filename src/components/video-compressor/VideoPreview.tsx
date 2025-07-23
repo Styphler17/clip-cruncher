@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,14 @@ export function VideoPreview({
 
   const originalUrl = URL.createObjectURL(originalFile);
   const compressedUrl = compressedBlob ? URL.createObjectURL(compressedBlob) : null;
+
+  // Cleanup URLs when component unmounts
+  React.useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(originalUrl);
+      if (compressedUrl) URL.revokeObjectURL(compressedUrl);
+    };
+  }, [originalUrl, compressedUrl]);
 
   const togglePlay = () => {
     if (videoRef.current) {

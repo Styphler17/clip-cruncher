@@ -100,9 +100,13 @@ function VideoCompressorContent() {
             if (newProgress >= 100) {
               clearInterval(progressInterval);
               
-              // Simulate compression result
+              // Simulate compression result with actual video file
               const compressionRatio = Math.random() * 0.4 + 0.2; // 20-60% reduction
               const compressedSize = Math.floor(job.originalSize * (1 - compressionRatio));
+              
+              // Use the original file as compressed output for demo purposes
+              // In a real app, this would be the actual compressed video
+              const compressedBlob = new Blob([job.file], { type: job.file.type });
               
               return {
                 ...job,
@@ -110,7 +114,7 @@ function VideoCompressorContent() {
                 progress: 100,
                 endTime: Date.now(),
                 compressedSize,
-                outputBlob: new Blob(['simulated compressed video'], { type: 'video/mp4' })
+                outputBlob: compressedBlob
               };
             }
             
@@ -140,7 +144,11 @@ function VideoCompressorContent() {
       const url = URL.createObjectURL(job.outputBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `compressed_${job.file.name}`;
+      // Create a proper filename for the compressed video
+      const originalName = job.file.name;
+      const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
+      const extension = originalName.substring(originalName.lastIndexOf('.'));
+      a.download = `${nameWithoutExt}_compressed${extension}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -77,30 +77,30 @@ export function VideoCompressorSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item, idx) => (
+              {navigationItems.map((item) => (
                 <React.Fragment key={item.title}>
-                  <SidebarMenuItem className={idx < navigationItems.length - 1 ? "mb-2" : ""}>
-                    <SidebarMenuButton asChild>
-                      <NavLink
-                        to={item.url}
-                        end
-                        className={({ isActive }) =>
-                          `flex items-center gap-3 px-6 py-4 rounded-lg transition-all duration-200 font-medium hover:bg-gray-700 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 ${
-                            isActive
-                              ? "bg-yellow-500 text-white shadow-md"
-                              : "text-gray-200"
-                          }`
-                        }
+                   <SidebarMenuItem className="mb-1">
+                     <SidebarMenuButton asChild>
+                       <NavLink
+                         to={item.url}
+                         end
+                         className={({ isActive }) =>
+                           `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium hover:bg-gray-700 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 ${
+                             isActive
+                               ? "bg-yellow-500 text-white shadow-md"
+                               : "text-gray-200"
+                           }`
+                         }
                       >
                         <item.icon className="w-5 h-5 flex-shrink-0" />
-                        {!isCollapsed && (
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-base">{item.title}</div>
-                            <div className="text-xs opacity-70 truncate">
-                              {item.description}
-                            </div>
-                          </div>
-                        )}
+                         {!isCollapsed && (
+                           <div className="flex-1 min-w-0">
+                             <div className="font-semibold text-sm">{item.title}</div>
+                             <div className="text-xs opacity-70 truncate leading-tight">
+                               {item.description}
+                             </div>
+                           </div>
+                         )}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

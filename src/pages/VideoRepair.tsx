@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 import { DropZone } from "@/components/video-compressor/DropZone";
 import { VideoPreview } from "@/components/video-compressor/VideoPreview";
@@ -16,8 +16,7 @@ import {
   Clock, 
   Download,
   RotateCcw,
-  FileVideo,
-  Zap
+  FileVideo
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -47,6 +46,7 @@ function VideoRepairContent() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [repairJobs, setRepairJobs] = useState<RepairJob[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const intervalsRef = useRef<ReturnType<typeof setInterval>[]>([]);
   type RepairType = 'metadata' | 'container' | 'full' | 'extract';
   const [selectedRepairType, setSelectedRepairType] = useState<RepairType>('metadata');
 
@@ -58,7 +58,7 @@ function VideoRepairContent() {
     });
   }, [toast]);
 
-  const analyzeVideoFile = useCallback(async (file: File): Promise<RepairJob['issues']> => {
+  const analyzeVideoFile = useCallback(async (): Promise<RepairJob['issues']> => {
     // Simulate video analysis
     await new Promise(resolve => setTimeout(resolve, 500)); // Faster analysis
     
@@ -84,7 +84,7 @@ function VideoRepairContent() {
     if (!job) return;
 
     // Analyze the video file
-    const issues = await analyzeVideoFile(job.file);
+    const issues = await analyzeVideoFile();
     
     setRepairJobs(prev => prev.map(j => 
       j.id === jobId 
@@ -148,6 +148,7 @@ function VideoRepairContent() {
         return updated;
       });
     }, 100); // Faster interval
+    intervalsRef.current.push(progressInterval);
   }, [repairJobs, analyzeVideoFile, toast]);
 
   const handleStartRepair = useCallback(() => {
@@ -273,6 +274,13 @@ function VideoRepairContent() {
       case 'cancelled': return 'bg-gray-500';
     }
   };
+
+  useEffect(() => {
+    return () => {
+      intervalsRef.current.forEach(clearInterval);
+      intervalsRef.current = [];
+    };
+  }, []);
 
   return (
     <div className="flex-1 p-6 space-y-6">

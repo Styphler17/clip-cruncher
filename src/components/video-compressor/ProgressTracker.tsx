@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -148,9 +148,6 @@ export function ProgressTracker({
           const isError = job.status === 'error';
           const isWaiting = job.status === 'waiting';
 
-          const compressionRatio = job.compressedSize 
-            ? ((job.originalSize - job.compressedSize) / job.originalSize) * 100
-            : 0;
 
 
 

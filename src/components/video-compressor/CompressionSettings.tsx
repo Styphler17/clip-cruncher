@@ -117,7 +117,12 @@ interface CompressionSettingsProps {
     scale: number;
     preserveQuality: boolean;
   };
-  onCustomSettingsChange: (settings: any) => void;
+  onCustomSettingsChange: (settings: {
+    crf: number;
+    preset: string;
+    scale: number;
+    preserveQuality: boolean;
+  }) => void;
 }
 
 export function CompressionSettings({

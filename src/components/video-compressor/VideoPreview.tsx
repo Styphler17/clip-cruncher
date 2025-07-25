@@ -11,7 +11,11 @@ import {
   faDownload,
   faFileVideo,
   faCompressArrowsAlt,
-  faChartLine
+  faChartLine,
+  faBackward,
+  faForward,
+  faVolumeMute,
+  faVolumeUp
 } from "@fortawesome/free-solid-svg-icons";
 
 interface VideoPreviewProps {
@@ -31,18 +35,31 @@ export function VideoPreview({
 }: VideoPreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<'original' | 'compressed'>('compressed');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [originalUrl, setOriginalUrl] = useState<string>('');
+  const [compressedUrl, setCompressedUrl] = useState<string>('');
 
-  const originalUrl = URL.createObjectURL(originalFile);
-  const compressedUrl = compressedBlob ? URL.createObjectURL(compressedBlob) : null;
-
-  // Cleanup URLs when component unmounts
+  // Create URLs only once when component mounts or when files change
   React.useEffect(() => {
+    const newOriginalUrl = URL.createObjectURL(originalFile);
+    setOriginalUrl(newOriginalUrl);
+
+    if (compressedBlob) {
+      const newCompressedUrl = URL.createObjectURL(compressedBlob);
+      setCompressedUrl(newCompressedUrl);
+    }
+
+    // Cleanup URLs when component unmounts or when files change
     return () => {
-      URL.revokeObjectURL(originalUrl);
-      if (compressedUrl) URL.revokeObjectURL(compressedUrl);
+      URL.revokeObjectURL(newOriginalUrl);
+      if (compressedBlob) {
+        URL.revokeObjectURL(compressedUrl);
+      }
     };
-  }, [originalUrl, compressedUrl]);
+  }, [originalFile, compressedBlob]);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -53,6 +70,93 @@ export function VideoPreview({
       }
       setIsPlaying(!isPlaying);
     }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  const handleVolumeChange = () => {
+    if (videoRef.current) {
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
+  const seekTo = (time: number) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+    }
+  };
+
+  const skipForward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.min(videoRef.current.currentTime + 10, duration);
+    }
+  };
+
+  const skipBackward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
+  // Keyboard controls
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!videoRef.current) return;
+      
+      switch (event.key) {
+        case ' ':
+          event.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          skipForward();
+          break;
+        case 'ArrowLeft':
+          event.preventDefault();
+          skipBackward();
+          break;
+        case 'Home':
+          event.preventDefault();
+          seekTo(0);
+          break;
+        case 'End':
+          event.preventDefault();
+          seekTo(duration);
+          break;
+        case 'm':
+        case 'M':
+          event.preventDefault();
+          toggleMute();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [duration, skipForward, togglePlay, skipBackward, seekTo, toggleMute]);
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const formatBytes = (bytes: number): string => {
@@ -89,14 +193,20 @@ export function VideoPreview({
       <CardContent className="space-y-4">
         {/* Video Player */}
         <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-          <video
+          {originalUrl && (
+                      <video
             ref={videoRef}
             src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
             className="w-full h-full object-contain"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
-            controls={false}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onVolumeChange={handleVolumeChange}
+            controls={true}
+            key={`${currentVideo}-${originalUrl}`}
           />
+          )}
           
           {/* Video Controls Overlay */}
           <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -125,17 +235,71 @@ export function VideoPreview({
                     <DialogTitle className="truncate">{originalFile.name}</DialogTitle>
                   </DialogHeader>
                   <div className="aspect-video bg-black rounded-lg overflow-hidden">
-                    <video
-                      src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
-                      className="w-full h-full object-contain"
-                      controls
-                    />
+                    {originalUrl && (
+                                              <video
+                          src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
+                          className="w-full h-full object-contain"
+                          controls={true}
+                          key={`dialog-${currentVideo}-${originalUrl}`}
+                        />
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
           </div>
         </div>
+
+        {/* Custom Video Controls */}
+        {duration > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={skipBackward}
+                className="flex-1"
+              >
+                <FontAwesomeIcon icon={faBackward} className="mr-1" />
+                -10s
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={togglePlay}
+                className="flex-1"
+              >
+                <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} className="mr-1" />
+                {isPlaying ? 'Pause' : 'Play'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={skipForward}
+                className="flex-1"
+              >
+                <FontAwesomeIcon icon={faForward} className="mr-1" />
+                +10s
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleMute}
+                className="flex-1"
+              >
+                <FontAwesomeIcon icon={isMuted ? faVolumeMute : faVolumeUp} className="mr-1" />
+                {isMuted ? 'Unmute' : 'Mute'}
+              </Button>
+            </div>
+            <div className="text-xs text-muted-foreground text-center">
+              Keyboard: Space (play/pause) • ← → (skip 10s) • M (mute) • Home/End (start/end)
+            </div>
+          </div>
+        )}
 
         {/* Video Toggle */}
         {compressedBlob && (

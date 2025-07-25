@@ -89,7 +89,7 @@ export function DropZone({
         onFilesSelected(valid);
       }
     }
-  }, [onFilesSelected, disabled, maxFiles, maxFileSize]);
+  }, [onFilesSelected, disabled, maxFiles, maxFileSize, validateFiles]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -102,7 +102,7 @@ export function DropZone({
     }
     // Reset input value to allow selecting the same files again
     e.target.value = '';
-  }, [onFilesSelected, maxFiles, maxFileSize]);
+  }, [onFilesSelected, maxFiles, maxFileSize, validateFiles]);
 
   return (
     <div className={cn("w-full", className)}>
@@ -130,6 +130,8 @@ export function DropZone({
           onChange={handleFileInput}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           disabled={disabled}
+          aria-label="Select video files"
+          title="Select video files to compress"
         />
 
         <div className="flex flex-col items-center gap-4">

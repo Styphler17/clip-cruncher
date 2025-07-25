@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faPlay, 
-  faPause, 
   faDownload, 
   faRedo, 
   faTimes, 
@@ -16,7 +15,6 @@ import {
   faCheckCircle,
   faClock,
   faSpinner,
-  faFileVideo,
   faHdd,
   faBolt
 } from "@fortawesome/free-solid-svg-icons";
@@ -48,7 +46,7 @@ interface ProgressTrackerProps {
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (!bytes || bytes === 0 || !isFinite(bytes)) return '0 Bytes';
   
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -82,12 +80,7 @@ export function ProgressTracker({
   onRetry,
   className 
 }: ProgressTrackerProps) {
-  const [currentTime, setCurrentTime] = useState(Date.now());
 
-  useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const activeJobs = jobs.filter(job => job.status === 'processing' || job.status === 'waiting');
   const completedJobs = jobs.filter(job => job.status === 'completed');
@@ -159,9 +152,7 @@ export function ProgressTracker({
             ? ((job.originalSize - job.compressedSize) / job.originalSize) * 100
             : 0;
 
-          const elapsedTime = job.startTime 
-            ? Math.floor((currentTime - job.startTime) / 1000)
-            : 0;
+
 
           return (
             <div key={job.id} className="space-y-3">
@@ -200,7 +191,7 @@ export function ProgressTracker({
                               <>
                                 <span>•</span>
                                 <span className="text-video-success">
-                                  Compressed: {formatBytes(job.compressedSize)} ({Math.round(compressionRatio)}% saved)
+                                  Compressed: {formatBytes(job.compressedSize)} ({Math.round(job.originalSize > 0 ? ((job.originalSize - job.compressedSize) / job.originalSize) * 100 : 0)}% saved)
                                 </span>
                               </>
                             )}
@@ -291,7 +282,7 @@ export function ProgressTracker({
                           </div>
                           <div className="flex items-center gap-1 text-video-success">
                             <FontAwesomeIcon icon={faBolt} />
-                            {Math.round(compressionRatio)}% smaller
+                            {Math.round(job.originalSize > 0 ? ((job.originalSize - job.compressedSize) / job.originalSize) * 100 : 0)}% smaller
                           </div>
                         </div>
                       )}

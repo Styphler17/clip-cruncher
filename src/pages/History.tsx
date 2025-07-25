@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Download, Trash2, Calendar, FileVideo, Clock, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,64 +14,66 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-// Mock data for demonstration
-const compressionHistory = [
-  {
-    id: 1,
-    fileName: "vacation_video.mp4",
-    originalSize: "156.7 MB",
-    compressedSize: "47.2 MB",
-    compressionRatio: "70%",
-    preset: "Balanced",
-    date: "2024-01-20",
-    time: "14:32",
-    duration: "2m 15s",
-    status: "completed"
-  },
-  {
-    id: 2,
-    fileName: "presentation_recording.mov",
-    originalSize: "324.1 MB",
-    compressedSize: "89.5 MB",
-    compressionRatio: "72%",
-    preset: "High Quality",
-    date: "2024-01-19",
-    time: "09:45",
-    duration: "4m 33s",
-    status: "completed"
-  },
-  {
-    id: 3,
-    fileName: "family_gathering.avi",
-    originalSize: "892.3 MB",
-    compressedSize: "198.7 MB",
-    compressionRatio: "78%",
-    preset: "Aggressive",
-    date: "2024-01-18",
-    time: "16:20",
-    duration: "12m 48s",
-    status: "completed"
-  }
-];
+import { useToast } from "@/hooks/use-toast";
+import { 
+  getCompressionHistory, 
+  clearHistory, 
+  exportHistory, 
+  getHistoryStats,
+  type CompressionHistoryItem 
+} from "@/lib/storage";
 
 function HistoryContent() {
   const { toggleSidebar } = useSidebar();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [history] = useState(compressionHistory);
+  const [history, setHistory] = useState<CompressionHistoryItem[]>([]);
+  const [stats, setStats] = useState({ totalCompressions: 0, totalSpaceSaved: 0, avgCompression: 0 });
+
+  useEffect(() => {
+    const loadHistory = () => {
+      const historyData = getCompressionHistory();
+      setHistory(historyData);
+      setStats(getHistoryStats());
+    };
+    
+    loadHistory();
+    
+    // Listen for storage changes
+    const handleStorageChange = () => loadHistory();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const filteredHistory = history.filter(item =>
     item.fileName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleClearHistory = () => {
-    // In a real app, this would clear localStorage
-    console.log("Clearing history...");
+    clearHistory();
+    setHistory([]);
+    setStats({ totalCompressions: 0, totalSpaceSaved: 0, avgCompression: 0 });
+    toast({
+      title: "History Cleared",
+      description: "All compression history has been cleared.",
+    });
   };
 
   const handleExportHistory = () => {
-    // In a real app, this would export to CSV/JSON
-    console.log("Exporting history...");
+    if (history.length === 0) {
+      toast({
+        title: "No History to Export",
+        description: "There's no compression history to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    exportHistory();
+    toast({
+      title: "History Exported",
+      description: "Compression history has been exported as CSV.",
+    });
   };
 
   return (
@@ -118,7 +120,7 @@ function HistoryContent() {
             <FileVideo className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-video-primary">{history.length}</div>
+            <div className="text-2xl font-bold text-video-primary">{stats.totalCompressions}</div>
           </CardContent>
         </Card>
         
@@ -128,7 +130,9 @@ function HistoryContent() {
             <Download className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-video-success">1.2 GB</div>
+            <div className="text-2xl font-bold text-video-success">
+              {(stats.totalSpaceSaved / (1024 * 1024 * 1024)).toFixed(1)} GB
+            </div>
           </CardContent>
         </Card>
         
@@ -138,7 +142,7 @@ function HistoryContent() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-video-warning">73%</div>
+            <div className="text-2xl font-bold text-video-warning">{stats.avgCompression.toFixed(0)}%</div>
           </CardContent>
         </Card>
       </div>
@@ -174,11 +178,11 @@ function HistoryContent() {
                 {filteredHistory.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.fileName}</TableCell>
-                    <TableCell>{item.originalSize}</TableCell>
-                    <TableCell>{item.compressedSize}</TableCell>
+                    <TableCell>{(item.originalSize / (1024 * 1024)).toFixed(1)} MB</TableCell>
+                    <TableCell>{(item.compressedSize / (1024 * 1024)).toFixed(1)} MB</TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="bg-video-success/10 text-video-success">
-                        {item.compressionRatio}
+                        {item.compressionRatio.toFixed(1)}%
                       </Badge>
                     </TableCell>
                     <TableCell>

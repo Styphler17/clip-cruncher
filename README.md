@@ -1,73 +1,82 @@
-# Welcome to your Lovable project
+# ClipSqueeze - Video Compression Made Simple
 
-## Project info
+ClipSqueeze is a professional, privacy-focused video compression tool that runs entirely in your browser. No uploads, no registration, no compromises.
 
-**URL**: https://lovable.dev/projects/ea1d5541-5b71-4f78-bde6-61c01029aed6
+## Features
 
-## How can I edit this code?
+- **100% Private & Secure**: All processing happens locally in your browser
+- **Lightning Fast**: Powered by WebAssembly and FFmpeg for efficient compression
+- **Works Everywhere**: No installation required, works on any modern browser
+- **No Size Limits**: Process files up to 5GB with support for all major formats
+- **Multiple Presets**: Choose from optimized compression presets or customize settings
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ea1d5541-5b71-4f78-bde6-61c01029aed6) and start prompting.
+- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Step 1: Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Step 2: Navigate to the project directory
+cd clipsqueeze
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Step 3: Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080` (or the next available port).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## Technologies Used
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Vite** - Fast build tool and dev server
+- **TypeScript** - Type-safe development
+- **React** - Modern UI framework
+- **shadcn/ui** - Beautiful component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **FFmpeg.wasm** - Video processing engine
+- **WebAssembly** - High-performance computing
 
-## How can I deploy this project?
+## Supported Formats
 
-Simply open [Lovable](https://lovable.dev/projects/ea1d5541-5b71-4f78-bde6-61c01029aed6) and click on Share -> Publish.
+- MP4, AVI, MOV, MKV, WMV
+- FLV, WebM, 3GP, OGV, M4V, QT
 
-## Can I connect a custom domain to my Lovable project?
+## Development
 
-Yes, you can!
+```sh
+# Start development server
+npm run dev
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Build for production
+npm run build
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# Preview production build
+npm run preview
+
+# Run linting
+npm run lint
+```
+
+## Deployment
+
+Build the project and deploy to any static hosting service:
+
+```sh
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+## License
+
+This project is open source and available under the MIT License.

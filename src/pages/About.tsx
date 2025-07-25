@@ -1,10 +1,11 @@
-import { Shield, Zap, Globe, Download, Code, Users, Star, Github, Menu } from "lucide-react";
+import { Shield, Zap, Globe, Download, Code, Users, Star, Github, Menu, Play } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
+import { useNavigate } from "react-router-dom";
 
 const features = [
   {
@@ -52,6 +53,7 @@ const stats = [
 
 function AboutContent() {
   const { toggleSidebar } = useSidebar();
+  const navigate = useNavigate();
 
   return (
     <div className="flex-1 flex flex-col">
@@ -71,7 +73,7 @@ function AboutContent() {
       <div className="flex-1 p-4 lg:p-6 space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-foreground">About Clip Cruncher</h1>
+        <h1 className="text-4xl font-bold text-foreground">About ClipSqueeze</h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           A professional, privacy-focused video compression tool that runs entirely in your browser. 
           No uploads, no registration, no compromises.
@@ -89,6 +91,16 @@ function AboutContent() {
             <Code className="w-3 h-3 mr-1" />
             Open Source
           </Badge>
+        </div>
+        <div className="flex justify-center">
+          <Button
+            onClick={() => navigate('/')}
+            size="lg"
+            className="bg-video-primary hover:bg-video-primary-dark"
+          >
+            <Play className="w-4 h-4 mr-2" />
+            Get Started
+          </Button>
         </div>
       </div>
 

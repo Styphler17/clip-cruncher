@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 import { DropZone } from "@/components/video-compressor/DropZone";
 import { CompressionSettings, COMPRESSION_PRESETS } from "@/components/video-compressor/CompressionSettings";
@@ -24,6 +24,7 @@ function VideoCompressorContent() {
   });
   const [compressionJobs, setCompressionJobs] = useState<CompressionJob[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const intervalsRef = useRef<ReturnType<typeof setInterval>[]>([]);
 
   const handleFilesSelected = useCallback((files: File[]) => {
     setSelectedFiles(prev => [...prev, ...files]);
@@ -123,6 +124,7 @@ function VideoCompressorContent() {
         return updated;
       });
     }, 200);
+    intervalsRef.current.push(progressInterval);
   }, [toast]);
 
   const simulateCompression = useCallback((jobs: CompressionJob[]) => {
@@ -236,6 +238,13 @@ function VideoCompressorContent() {
       description: "Retrying compression job...",
     });
   }, [startJobProcessing, toast]);
+
+  useEffect(() => {
+    return () => {
+      intervalsRef.current.forEach(clearInterval);
+      intervalsRef.current = [];
+    };
+  }, []);
 
   return (
     <div className="flex-1 p-6 space-y-6">

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 import { DropZone } from "@/components/video-compressor/DropZone";
 import { VideoPreview } from "@/components/video-compressor/VideoPreview";
@@ -46,6 +46,7 @@ function VideoRepairContent() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [repairJobs, setRepairJobs] = useState<RepairJob[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const intervalsRef = useRef<ReturnType<typeof setInterval>[]>([]);
   type RepairType = 'metadata' | 'container' | 'full' | 'extract';
   const [selectedRepairType, setSelectedRepairType] = useState<RepairType>('metadata');
 
@@ -147,6 +148,7 @@ function VideoRepairContent() {
         return updated;
       });
     }, 100); // Faster interval
+    intervalsRef.current.push(progressInterval);
   }, [repairJobs, analyzeVideoFile, toast]);
 
   const handleStartRepair = useCallback(() => {
@@ -272,6 +274,13 @@ function VideoRepairContent() {
       case 'cancelled': return 'bg-gray-500';
     }
   };
+
+  useEffect(() => {
+    return () => {
+      intervalsRef.current.forEach(clearInterval);
+      intervalsRef.current = [];
+    };
+  }, []);
 
   return (
     <div className="flex-1 p-6 space-y-6">

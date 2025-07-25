@@ -16,8 +16,7 @@ import {
   Clock, 
   Download,
   RotateCcw,
-  FileVideo,
-  Zap
+  FileVideo
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -58,7 +57,7 @@ function VideoRepairContent() {
     });
   }, [toast]);
 
-  const analyzeVideoFile = useCallback(async (file: File): Promise<RepairJob['issues']> => {
+  const analyzeVideoFile = useCallback(async (): Promise<RepairJob['issues']> => {
     // Simulate video analysis
     await new Promise(resolve => setTimeout(resolve, 500)); // Faster analysis
     
@@ -84,7 +83,7 @@ function VideoRepairContent() {
     if (!job) return;
 
     // Analyze the video file
-    const issues = await analyzeVideoFile(job.file);
+    const issues = await analyzeVideoFile();
     
     setRepairJobs(prev => prev.map(j => 
       j.id === jobId 

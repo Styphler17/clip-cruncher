@@ -45,18 +45,18 @@ export function VideoPreview({
   // Create URLs only once when component mounts or when files change
   React.useEffect(() => {
     const newOriginalUrl = URL.createObjectURL(originalFile);
-    setOriginalUrl(newOriginalUrl);
+    const newCompressedUrl = compressedBlob
+      ? URL.createObjectURL(compressedBlob)
+      : '';
 
-    if (compressedBlob) {
-      const newCompressedUrl = URL.createObjectURL(compressedBlob);
-      setCompressedUrl(newCompressedUrl);
-    }
+    setOriginalUrl(newOriginalUrl);
+    setCompressedUrl(newCompressedUrl);
 
     // Cleanup URLs when component unmounts or when files change
     return () => {
       URL.revokeObjectURL(newOriginalUrl);
-      if (compressedBlob) {
-        URL.revokeObjectURL(compressedUrl);
+      if (newCompressedUrl) {
+        URL.revokeObjectURL(newCompressedUrl);
       }
     };
   }, [originalFile, compressedBlob]);

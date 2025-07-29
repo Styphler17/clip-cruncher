@@ -250,13 +250,28 @@ export function VideoPreview({
           </div>
         </div>
 
+        {/* Always Visible Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration || 0)}</span>
+          </div>
+          <div className="relative w-full h-2 bg-secondary rounded-full overflow-hidden cursor-pointer"
+               onClick={(e) => {
+                 const rect = e.currentTarget.getBoundingClientRect();
+                 const percent = (e.clientX - rect.left) / rect.width;
+                 seekTo(percent * (duration || 0));
+               }}>
+            <div 
+              className="h-full bg-primary transition-all duration-150"
+              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+
         {/* Custom Video Controls */}
         {duration > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"

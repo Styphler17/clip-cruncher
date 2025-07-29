@@ -32,8 +32,8 @@ export const SUPPORTED_VIDEO_FORMATS = [
   'video/x-msvideo'
 ];
 
-// Maximum file size (500MB)
-export const MAX_FILE_SIZE = 500 * 1024 * 1024;
+// Maximum file size (10GB)
+export const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024;
 
 export class VideoProcessor {
   static async getVideoMetadata(file: File): Promise<VideoMetadata> {
@@ -69,7 +69,7 @@ export class VideoProcessor {
     if (file.size > MAX_FILE_SIZE) {
       return {
         isValid: false,
-        error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)}MB limit`
+        error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024 * 1024)}GB limit`
       };
     }
 

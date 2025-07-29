@@ -17,7 +17,7 @@ interface FileUploadZoneProps {
 export function FileUploadZone({
   onFilesAccepted,
   acceptedTypes = ['video/*'],
-  maxSize = 500 * 1024 * 1024, // 500MB
+  maxSize = 10 * 1024 * 1024 * 1024, // 10GB
   multiple = true,
   className,
   disabled = false
@@ -32,7 +32,7 @@ export function FileUploadZone({
       fileErrors.forEach((error: any) => {
         switch (error.code) {
           case 'file-too-large':
-            newErrors.push(`${file.name}: File size too large (max ${Math.round(maxSize / (1024 * 1024))}MB)`);
+            newErrors.push(`${file.name}: File size too large (max ${Math.round(maxSize / (1024 * 1024 * 1024))}GB)`);
             break;
           case 'file-invalid-type':
             newErrors.push(`${file.name}: Invalid file type`);
@@ -97,7 +97,7 @@ export function FileUploadZone({
             <p className="text-sm text-muted-foreground">
               {isDragReject 
                 ? `Only ${acceptedTypes.join(', ')} files are allowed`
-                : `or click to select files (max ${Math.round(maxSize / (1024 * 1024))}MB each)`}
+                : `or click to select files (max ${Math.round(maxSize / (1024 * 1024 * 1024))}GB each)`}
             </p>
           </div>
           

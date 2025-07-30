@@ -55,7 +55,7 @@ export function VideoPreview({
     // Cleanup URLs when component unmounts or when files change
     return () => {
       URL.revokeObjectURL(newOriginalUrl);
-      if (compressedBlob) {
+      if (compressedUrl) {
         URL.revokeObjectURL(compressedUrl);
       }
     };
@@ -73,13 +73,13 @@ export function VideoPreview({
   };
 
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
+    if (videoRef.current && isFinite(videoRef.current.currentTime)) {
       setCurrentTime(videoRef.current.currentTime);
     }
   };
 
   const handleLoadedMetadata = () => {
-    if (videoRef.current) {
+    if (videoRef.current && isFinite(videoRef.current.duration)) {
       setDuration(videoRef.current.duration);
     }
   };
@@ -91,19 +91,19 @@ export function VideoPreview({
   };
 
   const seekTo = (time: number) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
+    if (videoRef.current && isFinite(time) && time >= 0) {
+      videoRef.current.currentTime = Math.min(time, duration || 0);
     }
   };
 
   const skipForward = () => {
-    if (videoRef.current) {
+    if (videoRef.current && isFinite(videoRef.current.currentTime) && isFinite(duration)) {
       videoRef.current.currentTime = Math.min(videoRef.current.currentTime + 10, duration);
     }
   };
 
   const skipBackward = () => {
-    if (videoRef.current) {
+    if (videoRef.current && isFinite(videoRef.current.currentTime)) {
       videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
     }
   };
@@ -151,9 +151,10 @@ export function VideoPreview({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [duration, skipForward, togglePlay, skipBackward, seekTo, toggleMute]);
+  }, [duration]);
 
   const formatTime = (seconds: number): string => {
+    if (!isFinite(seconds) || seconds < 0) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -256,17 +257,20 @@ export function VideoPreview({
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration || 0)}</span>
           </div>
-          <div className="relative w-full h-2 bg-secondary rounded-full overflow-hidden cursor-pointer"
-               onClick={(e) => {
-                 const rect = e.currentTarget.getBoundingClientRect();
-                 const percent = (e.clientX - rect.left) / rect.width;
-                 seekTo(percent * (duration || 0));
-               }}>
-            <div 
-              className="h-full bg-primary transition-all duration-150"
-              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-            />
-          </div>
+           <div className="relative w-full h-2 bg-secondary rounded-full overflow-hidden cursor-pointer"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const percent = (e.clientX - rect.left) / rect.width;
+                  const seekTime = percent * (duration || 0);
+                  if (isFinite(seekTime) && seekTime >= 0) {
+                    seekTo(seekTime);
+                  }
+                }}>
+             <div 
+               className="h-full bg-primary transition-all duration-150"
+               style={{ width: `${duration && isFinite(duration) && isFinite(currentTime) ? (currentTime / duration) * 100 : 0}%` }}
+             />
+           </div>
         </div>
 
         {/* Custom Video Controls */}

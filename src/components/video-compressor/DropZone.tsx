@@ -26,7 +26,7 @@ const SUPPORTED_FORMATS = [
 export function DropZone({ 
   onFilesSelected, 
   maxFiles = 10, 
-  maxFileSize = 5 * 1024 * 1024 * 1024, // 5GB
+  maxFileSize = 10 * 1024 * 1024 * 1024, // 10GB
   disabled = false,
   className 
 }: DropZoneProps) {
@@ -89,7 +89,7 @@ export function DropZone({
         onFilesSelected(valid);
       }
     }
-  }, [onFilesSelected, disabled, maxFiles, maxFileSize, validateFiles]);
+  }, [onFilesSelected, disabled, maxFiles, maxFileSize]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -102,7 +102,7 @@ export function DropZone({
     }
     // Reset input value to allow selecting the same files again
     e.target.value = '';
-  }, [onFilesSelected, maxFiles, maxFileSize, validateFiles]);
+  }, [onFilesSelected, maxFiles, maxFileSize]);
 
   return (
     <div className={cn("w-full", className)}>

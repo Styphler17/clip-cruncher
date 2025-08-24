@@ -156,7 +156,7 @@ export function CompressionSettings({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="w-5 h-5 text-video-primary" />
-          Compression Settings
+          Settings
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">

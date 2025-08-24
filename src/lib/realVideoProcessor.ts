@@ -181,14 +181,15 @@ class RealVideoProcessor {
       
       await this.ffmpeg.writeFile(inputName, await fetchFile(file));
 
-      // Build FFmpeg command
+      // Build FFmpeg command - Always convert to MP4
       const args = [
         '-i', inputName,
         '-c:v', 'libx264',
         '-crf', crf.toString(),
         '-preset', preset,
         '-c:a', 'aac',
-        '-b:a', '128k'
+        '-b:a', '128k',
+        '-movflags', '+faststart' // Optimize for web streaming
       ];
 
       // Add resolution scaling if needed

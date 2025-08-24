@@ -38,6 +38,7 @@ export function VideoPreview({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [videoAspectRatio, setVideoAspectRatio] = useState<'16:9' | '9:16'>('16:9');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [originalUrl, setOriginalUrl] = useState<string>('');
   const [compressedUrl, setCompressedUrl] = useState<string>('');
@@ -81,6 +82,13 @@ export function VideoPreview({
   const handleLoadedMetadata = () => {
     if (videoRef.current && isFinite(videoRef.current.duration)) {
       setDuration(videoRef.current.duration);
+      
+      // Detect aspect ratio
+      const { videoWidth, videoHeight } = videoRef.current;
+      if (videoWidth && videoHeight) {
+        const aspectRatio = videoWidth / videoHeight;
+        setVideoAspectRatio(aspectRatio > 1 ? '16:9' : '9:16');
+      }
     }
   };
 
@@ -193,7 +201,7 @@ export function VideoPreview({
       
       <CardContent className="space-y-4">
         {/* Video Player */}
-        <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+        <div className={`relative bg-black rounded-lg overflow-hidden ${videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16] max-w-sm mx-auto'}`}>
           {originalUrl && (
                       <video
             ref={videoRef}
@@ -235,7 +243,7 @@ export function VideoPreview({
                   <DialogHeader>
                     <DialogTitle className="truncate">{originalFile.name}</DialogTitle>
                   </DialogHeader>
-                  <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                  <div className={`bg-black rounded-lg overflow-hidden ${videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16] max-w-sm mx-auto'}`}>
                     {originalUrl && (
                                               <video
                           src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}

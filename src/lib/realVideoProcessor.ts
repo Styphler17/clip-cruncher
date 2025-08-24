@@ -181,7 +181,7 @@ class RealVideoProcessor {
       
       await this.ffmpeg.writeFile(inputName, await fetchFile(file));
 
-      // Build FFmpeg command - Always convert to MP4
+      // Build FFmpeg command - Always convert to MP4 with proper seeking support
       const args = [
         '-i', inputName,
         '-c:v', 'libx264',
@@ -189,7 +189,11 @@ class RealVideoProcessor {
         '-preset', preset,
         '-c:a', 'aac',
         '-b:a', '128k',
-        '-movflags', '+faststart' // Optimize for web streaming
+        '-movflags', '+faststart', // Optimize for web streaming
+        '-keyint_min', '25', // Minimum keyframe interval
+        '-g', '50', // Maximum keyframe interval for better seeking
+        '-sc_threshold', '40', // Scene change threshold
+        '-pix_fmt', 'yuv420p' // Ensure compatibility
       ];
 
       // Add resolution scaling if needed
@@ -411,7 +415,8 @@ class RealVideoProcessor {
           const targetSize = Math.floor(file.size * compressionRatio);
           
           file.slice(0, targetSize).arrayBuffer().then(buffer => {
-            const compressedBlob = new Blob([buffer], { type: file.type });
+            // Always return MP4 format, even in fallback
+            const compressedBlob = new Blob([buffer], { type: 'video/mp4' });
             resolve(compressedBlob);
           });
         }

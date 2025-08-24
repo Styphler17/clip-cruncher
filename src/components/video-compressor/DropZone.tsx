@@ -26,7 +26,7 @@ const SUPPORTED_FORMATS = [
 export function DropZone({ 
   onFilesSelected, 
   maxFiles = 10, 
-  maxFileSize = 10 * 1024 * 1024 * 1024, // 10GB
+  maxFileSize = Infinity, // No size limit
   disabled = false,
   className 
 }: DropZoneProps) {
@@ -44,8 +44,8 @@ export function DropZone({
         return;
       }
 
-      // Check file size
-      if (file.size > maxFileSize) {
+      // Check file size only if maxFileSize is not Infinity
+      if (maxFileSize !== Infinity && file.size > maxFileSize) {
         const sizeMB = Math.round(file.size / (1024 * 1024));
         const maxSizeMB = Math.round(maxFileSize / (1024 * 1024));
         newErrors.push(`${file.name}: File too large (${sizeMB}MB > ${maxSizeMB}MB)`);
@@ -149,7 +149,7 @@ export function DropZone({
               Supports MP4, AVI, MOV, MKV, WMV, FLV, WebM, 3GP, OGV, M4V, QT
             </p>
             <p className="text-xs text-muted-foreground">
-              Maximum {maxFiles} files • Up to {Math.round(maxFileSize / (1024 * 1024 * 1024))}GB per file
+              Maximum {maxFiles} files • {maxFileSize === Infinity ? 'No size limit' : `Up to ${Math.round(maxFileSize / (1024 * 1024 * 1024))}GB per file`}
             </p>
           </div>
 

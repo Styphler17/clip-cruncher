@@ -26,7 +26,7 @@ const features = [
   {
     icon: Download,
     title: "No Size Limits",
-    description: "Process files up to 5GB with support for all major video formats and codecs."
+    description: "Process files of any size with support for all major video formats and codecs - no file size restrictions."
   }
 ];
 
@@ -46,7 +46,7 @@ const supportedFormats = [
 
 const stats = [
   { label: "Supported Formats", value: "11+" },
-  { label: "Max File Size", value: "5GB" },
+  { label: "Max File Size", value: "Unlimited" },
   { label: "Compression Presets", value: "6" },
   { label: "Privacy Level", value: "100%" }
 ];

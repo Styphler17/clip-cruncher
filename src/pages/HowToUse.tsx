@@ -13,7 +13,7 @@ const steps = [
     title: "Upload Your Video",
     description: "Drag and drop your video file or click to browse. Supports MP4, AVI, MOV, MKV, and more.",
     icon: Upload,
-    tips: ["Files up to 5GB are supported", "Multiple files can be processed at once", "All processing happens locally in your browser"]
+    tips: ["No file size limits", "Multiple files can be processed at once", "All processing happens locally in your browser"]
   },
   {
     step: 2,

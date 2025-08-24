@@ -120,7 +120,6 @@ export function DropZone({
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={() => !disabled && document.getElementById('file-input')?.click()}
       >
         <input
           id="file-input"
@@ -128,7 +127,7 @@ export function DropZone({
           multiple
           accept="video/*,.mp4,.avi,.mov,.mkv,.wmv,.flv,.webm,.3gp,.ogv,.m4v,.qt"
           onChange={handleFileInput}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           disabled={disabled}
           aria-label="Select video files"
           title="Select video files to compress"

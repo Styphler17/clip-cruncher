@@ -214,7 +214,11 @@ function VideoRepairContent() {
         const finalFormat = format || 'mp4';
         const fullFilename = `${finalFilename}.${finalFormat}`;
         
-        const url = URL.createObjectURL(job.outputBlob);
+        // Create a new blob with the correct MIME type for the selected format
+        const mimeType = `video/${finalFormat === 'mov' ? 'quicktime' : finalFormat}`;
+        const formattedBlob = new Blob([job.outputBlob], { type: mimeType });
+        
+        const url = URL.createObjectURL(formattedBlob);
         const a = document.createElement('a');
         a.href = url;
         a.download = fullFilename;

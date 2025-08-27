@@ -35,6 +35,7 @@ export interface CompressionJob {
     preset: string;
     crf: number;
     scale: number;
+    outputFormat?: string;
   };
 }
 

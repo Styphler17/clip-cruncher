@@ -173,7 +173,7 @@ class RealVideoProcessor {
       const crf = options.crf ?? (options.quality ? this.qualityToCrf(options.quality) : 23);
       const preset = options.preset ?? 'medium';
       const scale = options.scale ?? 100;
-      const outputFormat = options.outputFormat || 'mp4';
+      const outputFormat = options.outputFormat || options.format || 'mp4';
       
       // Write input file
       const inputName = 'input.mp4';
@@ -181,20 +181,28 @@ class RealVideoProcessor {
       
       await this.ffmpeg.writeFile(inputName, await fetchFile(file));
 
-      // Build FFmpeg command - Always convert to MP4 with proper seeking support
+      // Build FFmpeg command based on output format
       const args = [
         '-i', inputName,
         '-c:v', 'libx264',
         '-crf', crf.toString(),
         '-preset', preset,
-        '-c:a', 'aac',
-        '-b:a', '128k',
         '-movflags', '+faststart', // Optimize for web streaming
         '-keyint_min', '25', // Minimum keyframe interval
         '-g', '50', // Maximum keyframe interval for better seeking
         '-sc_threshold', '40', // Scene change threshold
         '-pix_fmt', 'yuv420p' // Ensure compatibility
       ];
+
+      // Add audio codec based on output format
+      if (outputFormat === 'webm') {
+        args.push('-c:a', 'libvorbis');
+      } else if (outputFormat === 'mkv') {
+        args.push('-c:a', 'aac');
+      } else {
+        args.push('-c:a', 'aac');
+        args.push('-b:a', '128k');
+      }
 
       // Add resolution scaling if needed
       if (scale !== 100) {
@@ -422,8 +430,10 @@ class RealVideoProcessor {
           const targetSize = Math.floor(file.size * compressionRatio);
           
           file.slice(0, targetSize).arrayBuffer().then(buffer => {
-            // Always return MP4 format, even in fallback
-            const compressedBlob = new Blob([buffer], { type: 'video/mp4' });
+      // Update fallback compression to respect output format
+      const outputFormat = options.outputFormat || options.format || 'mp4';
+      const mimeType = `video/${outputFormat === 'mov' ? 'quicktime' : outputFormat}`;
+      const compressedBlob = new Blob([buffer], { type: mimeType });
             resolve(compressedBlob);
           });
         }

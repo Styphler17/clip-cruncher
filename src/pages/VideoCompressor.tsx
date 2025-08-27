@@ -61,7 +61,8 @@ function VideoCompressorContent() {
                     const originalData = new Uint8Array(originalArrayBuffer);
                     const targetSize = Math.max(compressedSize, 1024 * 1024);
                     const compressedData = originalData.slice(0, targetSize);
-                    compressedBlob = new Blob([compressedData], { type: job.file.type });
+                     // Always create MP4 blobs in simulation for better compatibility
+                     compressedBlob = new Blob([compressedData], { type: 'video/mp4' });
                     finalCompressedSize = compressedBlob.size;
                   } catch (error) {
                     if (error instanceof Error && error.name === "NotReadableError") {
@@ -161,7 +162,8 @@ function VideoCompressorContent() {
       settings: {
         preset: selectedPreset,
         crf: settings.crf,
-        scale: settings.scale
+        scale: settings.scale,
+        outputFormat: customSettings.outputFormat
       }
     }));
     
@@ -186,18 +188,26 @@ function VideoCompressorContent() {
     });
   }, [toast]);
 
-  const handleDownload = useCallback((jobId: string) => {
+  const handleDownload = useCallback((jobId: string, customFilename?: string, format?: string) => {
     const job = compressionJobs.find(j => j.id === jobId);
     if (job?.outputBlob) {
       try {
         const originalName = job.file.name;
         const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
-        const extension = originalName.substring(originalName.lastIndexOf('.'));
-        const filename = `${nameWithoutExt}_compressed${extension}`;
-        const url = URL.createObjectURL(job.outputBlob);
+        
+        // Use custom filename and format if provided, otherwise use defaults
+        const finalFilename = customFilename || `${nameWithoutExt}_compressed`;
+        const finalFormat = format || 'mp4';
+        const fullFilename = `${finalFilename}.${finalFormat}`;
+        
+        // Create a new blob with the correct MIME type for the selected format
+        const mimeType = `video/${finalFormat === 'mov' ? 'quicktime' : finalFormat}`;
+        const formattedBlob = new Blob([job.outputBlob], { type: mimeType });
+        
+        const url = URL.createObjectURL(formattedBlob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filename;
+        a.download = fullFilename;
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
@@ -207,7 +217,7 @@ function VideoCompressorContent() {
         }, 100);
         toast({
           title: "Download Started",
-          description: `Downloading compressed ${filename}`,
+          description: `Downloading compressed ${fullFilename}`,
         });
       } catch (error) {
         toast({

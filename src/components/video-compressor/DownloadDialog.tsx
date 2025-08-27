@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,6 +51,9 @@ export function DownloadDialog({
             <Download className="w-5 h-5 text-video-primary" />
             Download Video
           </DialogTitle>
+          <DialogDescription>
+            Choose your preferred filename and output format for the download.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

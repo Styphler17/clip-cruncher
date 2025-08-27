@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DownloadDialog } from "./DownloadDialog";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faPlay, 
@@ -23,7 +24,7 @@ interface VideoPreviewProps {
   compressedBlob?: Blob;
   originalSize: number;
   compressedSize?: number;
-  onDownload: () => void;
+  onDownload: (filename?: string, format?: string) => void;
 }
 
 export function VideoPreview({ 
@@ -187,14 +188,18 @@ export function VideoPreview({
             <span className="truncate">{originalFile.name}</span>
           </div>
           {compressedBlob && (
-            <Button
-              onClick={onDownload}
-              size="sm"
-              className="bg-video-success hover:bg-video-success/90"
+            <DownloadDialog
+              originalFileName={originalFile.name}
+              onDownload={(filename, format) => onDownload?.(filename, format)}
             >
-              <FontAwesomeIcon icon={faDownload} className="mr-2" />
-              Download
-            </Button>
+              <Button
+                size="sm"
+                className="bg-video-success hover:bg-video-success/90"
+              >
+                <FontAwesomeIcon icon={faDownload} className="mr-2" />
+                Download
+              </Button>
+            </DownloadDialog>
           )}
         </CardTitle>
       </CardHeader>

@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 import { DropZone } from "@/components/video-compressor/DropZone";
 import { VideoPreview } from "@/components/video-compressor/VideoPreview";
+import { DownloadDialog } from "@/components/video-compressor/DownloadDialog";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -201,18 +202,22 @@ function VideoRepairContent() {
     });
   }, [toast]);
 
-  const handleDownload = useCallback((jobId: string) => {
+  const handleDownload = useCallback((jobId: string, customFilename?: string, format?: string) => {
     const job = repairJobs.find(j => j.id === jobId);
     if (job?.outputBlob) {
       try {
         const originalName = job.file.name;
         const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
-        const extension = originalName.substring(originalName.lastIndexOf('.'));
-        const filename = `${nameWithoutExt}_repaired${extension}`;
+        
+        // Use custom filename and format if provided, otherwise use defaults
+        const finalFilename = customFilename || `${nameWithoutExt}_repaired`;
+        const finalFormat = format || 'mp4';
+        const fullFilename = `${finalFilename}.${finalFormat}`;
+        
         const url = URL.createObjectURL(job.outputBlob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filename;
+        a.download = fullFilename;
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
@@ -222,7 +227,7 @@ function VideoRepairContent() {
         }, 100);
         toast({
           title: "Download Started",
-          description: `Downloading repaired ${filename}`,
+          description: `Downloading repaired ${fullFilename}`,
         });
       } catch (error) {
         toast({
@@ -403,13 +408,15 @@ function VideoRepairContent() {
                           </div>
                           <div className="flex items-center gap-2">
                             {isCompleted && (
-                              <Button
-                                size="sm"
-                                onClick={() => handleDownload(job.id)}
+                              <DownloadDialog
+                                originalFileName={job.file.name}
+                                onDownload={(filename, format) => handleDownload(job.id, filename, format)}
                               >
-                                <Download className="w-4 h-4 mr-1" />
-                                Download
-                              </Button>
+                                <Button size="sm">
+                                  <Download className="w-4 h-4 mr-1" />
+                                  Download
+                                </Button>
+                              </DownloadDialog>
                             )}
                             {isError && (
                               <Button
@@ -490,7 +497,7 @@ function VideoRepairContent() {
                               compressedBlob={job.outputBlob}
                               originalSize={job.originalSize}
                               compressedSize={job.repairedSize}
-                              onDownload={() => handleDownload(job.id)}
+                              onDownload={(filename, format) => handleDownload(job.id, filename, format)}
                             />
                           </div>
                         )}

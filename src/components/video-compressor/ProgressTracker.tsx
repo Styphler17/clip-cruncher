@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { VideoPreview } from "./VideoPreview";
+import { DownloadDialog } from "./DownloadDialog";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -40,7 +41,7 @@ export interface CompressionJob {
 interface ProgressTrackerProps {
   jobs: CompressionJob[];
   onCancelJob: (jobId: string) => void;
-  onDownload: (jobId: string) => void;
+  onDownload: (jobId: string, filename?: string, format?: string) => void;
   onRetry: (jobId: string) => void;
   className?: string;
 }
@@ -198,14 +199,18 @@ export function ProgressTracker({
 
                         <div className="flex items-center gap-1">
                           {isCompleted && (
-                            <Button
-                              size="sm"
-                              onClick={() => onDownload(job.id)}
-                              className="h-8 px-3 bg-video-success hover:bg-video-success/90"
+                            <DownloadDialog
+                              originalFileName={job.file.name}
+                              onDownload={(filename, format) => onDownload(job.id, filename, format)}
                             >
-                              <FontAwesomeIcon icon={faDownload} className="mr-1" />
-                              Download
-                            </Button>
+                              <Button
+                                size="sm"
+                                className="h-8 px-3 bg-video-success hover:bg-video-success/90"
+                              >
+                                <FontAwesomeIcon icon={faDownload} className="mr-1" />
+                                Download
+                              </Button>
+                            </DownloadDialog>
                           )}
                           
                           {isError && (
@@ -296,7 +301,7 @@ export function ProgressTracker({
                   compressedBlob={job.outputBlob}
                   originalSize={job.originalSize}
                   compressedSize={job.compressedSize}
-                  onDownload={() => onDownload(job.id)}
+                  onDownload={(filename, format) => onDownload(job.id, filename, format)}
                 />
               )}
             </div>

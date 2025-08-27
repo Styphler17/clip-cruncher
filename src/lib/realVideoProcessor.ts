@@ -12,14 +12,13 @@ export interface VideoMetadata {
 }
 
 export interface CompressionOptions {
-  quality: number; // 0-100 (maps to CRF)
-  targetSize?: number; // in MB
-  format?: 'mp4' | 'webm';
-  resolution?: { width: number; height: number };
-  bitrate?: number;
-  preset?: string;
-  crf?: number;
-  scale?: number;
+  crf: number;        // Quality (0-51, lower = better quality)
+  preset: string;     // Encoding preset (ultrafast to veryslow)
+  scale: number;      // Resolution scaling percentage (25, 50, 75, 100)
+  bitrate?: number;   // Target bitrate in kbps
+  format?: string;    // Output format (mp4, webm, avi, etc.)
+  outputFormat: string; // Desired output format
+  quality?: number;   // Legacy quality property for compatibility
 }
 
 export interface RepairOptions {
@@ -171,13 +170,14 @@ class RealVideoProcessor {
       });
 
       // Convert options to FFmpeg parameters
-      const crf = options.crf ?? this.qualityToCrf(options.quality);
+      const crf = options.crf ?? (options.quality ? this.qualityToCrf(options.quality) : 23);
       const preset = options.preset ?? 'medium';
       const scale = options.scale ?? 100;
+      const outputFormat = options.outputFormat || 'mp4';
       
       // Write input file
       const inputName = 'input.mp4';
-      const outputName = 'output.mp4';
+      const outputName = `output.${outputFormat}`;
       
       await this.ffmpeg.writeFile(inputName, await fetchFile(file));
 
@@ -207,8 +207,14 @@ class RealVideoProcessor {
         args.push('-b:v', `${options.bitrate}k`);
       }
 
-      // Output format
-      args.push('-f', 'mp4', outputName);
+      // Add keyframe interval for better seeking (especially important for mp4)
+      if (outputFormat === 'mp4') {
+        args.push('-g', '30'); // GOP size of 30 frames
+        args.push('-keyint_min', '30');
+        args.push('-sc_threshold', '0');
+      }
+      
+      args.push('-f', outputFormat, outputName);
 
       // Execute compression
       await this.ffmpeg.exec(args);
@@ -220,8 +226,9 @@ class RealVideoProcessor {
       await this.ffmpeg.deleteFile(inputName);
       await this.ffmpeg.deleteFile(outputName);
 
-      // Create blob from the compressed data
-      const compressedBlob = new Blob([data], { type: 'video/mp4' });
+      // Create blob from the compressed data with correct MIME type
+      const mimeType = `video/${outputFormat === 'mov' ? 'quicktime' : outputFormat}`;
+      const compressedBlob = new Blob([data], { type: mimeType });
       
       if (onProgress) {
         onProgress(100);
@@ -411,7 +418,7 @@ class RealVideoProcessor {
           clearInterval(interval);
           
           // Simulate compression by reducing file size
-          const compressionRatio = Math.min(options.quality / 100, 0.8);
+          const compressionRatio = Math.min((options.quality ?? 50) / 100, 0.8);
           const targetSize = Math.floor(file.size * compressionRatio);
           
           file.slice(0, targetSize).arrayBuffer().then(buffer => {

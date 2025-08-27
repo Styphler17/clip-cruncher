@@ -108,6 +108,14 @@ const RESOLUTION_OPTIONS = [
   { value: 100, label: '100% (Original size)' },
 ];
 
+const OUTPUT_FORMATS = [
+  { value: 'mp4', label: 'MP4 (Recommended)', description: 'Best compatibility, auto-converts non-MP4 files' },
+  { value: 'webm', label: 'WebM', description: 'Web optimized format' },
+  { value: 'avi', label: 'AVI', description: 'Legacy format' },
+  { value: 'mov', label: 'MOV', description: 'QuickTime format' },
+  { value: 'mkv', label: 'MKV', description: 'Matroska format' }
+];
+
 interface CompressionSettingsProps {
   selectedPreset: string;
   onPresetChange: (preset: string) => void;
@@ -116,12 +124,14 @@ interface CompressionSettingsProps {
     preset: string;
     scale: number;
     preserveQuality: boolean;
+    outputFormat: string;
   };
   onCustomSettingsChange: (settings: {
     crf: number;
     preset: string;
     scale: number;
     preserveQuality: boolean;
+    outputFormat: string;
   }) => void;
 }
 
@@ -143,7 +153,8 @@ export function CompressionSettings({
           crf: preset.crf,
           preset: preset.preset,
           scale: preset.scale,
-          preserveQuality: customSettings.preserveQuality
+          preserveQuality: customSettings.preserveQuality,
+          outputFormat: customSettings.outputFormat
         });
       }
     }
@@ -306,6 +317,32 @@ export function CompressionSettings({
             </div>
           </div>
         )}
+
+        {/* Output Format Selection */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Output Format:</label>
+          <Select
+            value={customSettings.outputFormat}
+            onValueChange={(value) => onCustomSettingsChange({
+              ...customSettings,
+              outputFormat: value
+            })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {OUTPUT_FORMATS.map((format) => (
+                <SelectItem key={format.value} value={format.value}>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{format.label}</span>
+                    <span className="text-xs text-muted-foreground">{format.description}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Advanced Options */}
         <div className="space-y-3">

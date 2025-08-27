@@ -20,7 +20,8 @@ function VideoCompressorContent() {
     crf: 25,
     preset: 'medium',
     scale: 100,
-    preserveQuality: false
+    preserveQuality: false,
+    outputFormat: 'mp4'
   });
   const [compressionJobs, setCompressionJobs] = useState<CompressionJob[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);

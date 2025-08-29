@@ -108,11 +108,11 @@ export function DropZone({
     <div className={cn("w-full", className)}>
       <div
         className={cn(
-          "relative border-2 border-dashed rounded-lg p-8 text-center transition-smooth cursor-pointer",
-          "hover:border-video-primary hover:bg-drop-zone-bg/50",
+          "relative border-2 border-dashed rounded-2xl p-12 text-center transition-spring cursor-pointer group overflow-hidden",
+          "hover:border-video-primary hover:shadow-glow-sm hover:bg-gradient-primary/5",
           {
-            "border-drop-zone-active bg-video-primary/5": dragActive,
-            "border-drop-zone-border bg-drop-zone-bg": !dragActive,
+            "border-video-primary bg-gradient-primary/10 shadow-glow-sm scale-[1.02]": dragActive,
+            "border-drop-zone-border bg-gradient-surface": !dragActive,
             "opacity-50 cursor-not-allowed": disabled,
           }
         )}
@@ -121,6 +121,13 @@ export function DropZone({
         onDragOver={handleDrag}
         onDrop={handleDrop}
       >
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-5 transition-smooth"></div>
+        <div className={cn(
+          "absolute inset-0 transition-smooth",
+          dragActive && "bg-gradient-primary/10"
+        )}></div>
+        
         <input
           id="file-input"
           type="file"
@@ -133,30 +140,58 @@ export function DropZone({
           title="Select video files to compress"
         />
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="relative z-10 flex flex-col items-center gap-6">
+          {/* Enhanced Icon */}
           <div className={cn(
-            "w-16 h-16 rounded-full flex items-center justify-center transition-smooth",
-            dragActive ? "bg-video-primary text-white" : "bg-video-secondary text-muted-foreground"
+            "w-20 h-20 rounded-2xl flex items-center justify-center transition-spring shadow-lg relative overflow-hidden",
+            dragActive 
+              ? "bg-gradient-primary text-white shadow-glow animate-pulse-glow" 
+              : "bg-gradient-secondary text-muted-foreground group-hover:bg-gradient-primary group-hover:text-white group-hover:shadow-glow-sm"
           )}>
-            {dragActive ? <Upload className="w-8 h-8" /> : <FileVideo className="w-8 h-8" />}
+            <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-100 transition-smooth"></div>
+            <div className="relative z-10">
+              {dragActive ? (
+                <Upload className="w-10 h-10" />
+              ) : (
+                <FileVideo className="w-10 h-10 transition-spring group-hover:scale-110" />
+              )}
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-foreground">
+          {/* Enhanced Text Content */}
+          <div className="space-y-3 max-w-md">
+            <h3 className={cn(
+              "text-xl font-bold transition-smooth",
+              dragActive 
+                ? "text-video-primary" 
+                : "text-foreground group-hover:text-video-primary"
+            )}>
               {dragActive ? "Drop your videos here" : "Select or drop video files"}
             </h3>
-            <p className="text-sm text-muted-foreground">
-              Supports MP4, AVI, MOV, MKV, WMV, FLV, WebM, 3GP, OGV, M4V, QT
+            <p className="text-muted-foreground leading-relaxed">
+              Supports all major formats: MP4, AVI, MOV, MKV, WMV, FLV, WebM, 3GP, OGV, M4V, QT
             </p>
-            <p className="text-xs text-muted-foreground">
-              Maximum {maxFiles} files • {maxFileSize === Infinity ? 'No size limit' : `Up to ${Math.round(maxFileSize / (1024 * 1024 * 1024))}GB per file`}
-            </p>
+            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-video-success"></div>
+                <span>Max {maxFiles} files</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-video-info"></div>
+                <span>{maxFileSize === Infinity ? 'No size limit' : `Up to ${Math.round(maxFileSize / (1024 * 1024 * 1024))}GB per file`}</span>
+              </div>
+            </div>
           </div>
 
+          {/* Call to Action */}
           {!disabled && (
-            <div className="flex items-center gap-2 text-video-primary">
-              <Upload className="w-4 h-4" />
-              <span className="text-sm font-medium">Click to browse or drag & drop</span>
+            <div className={cn(
+              "flex items-center gap-3 px-6 py-3 rounded-xl border transition-spring",
+              "border-video-primary/20 bg-video-primary/5 text-video-primary",
+              "group-hover:border-video-primary/40 group-hover:bg-video-primary/10 group-hover:shadow-glow-sm"
+            )}>
+              <Upload className="w-5 h-5" />
+              <span className="font-medium">Click to browse or drag & drop</span>
             </div>
           )}
         </div>

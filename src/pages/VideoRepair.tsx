@@ -283,12 +283,12 @@ function VideoRepairContent() {
   };
 
   return (
-    <div className="flex-1 p-6 space-y-6">
+    <div className="flex-1 p-4 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold">Video Repair</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold">Video Repair</h1>
+          <p className="text-muted-foreground text-sm">
             Fix corrupted videos, metadata issues, and playback problems
           </p>
         </div>
@@ -302,12 +302,12 @@ function VideoRepairContent() {
         </Button>
       </div>
 
-      {/* Topbar */}
-      <div className="flex items-center gap-4 mb-6">
+      {/* Action Bar */}
+      <div className="flex flex-wrap items-center gap-3 p-3 bg-card/50 rounded-lg border">
         <Button
           onClick={handleStartRepair}
           disabled={selectedFiles.length === 0 || isProcessing}
-          size="lg"
+          size="sm"
         >
           <Wrench className="w-4 h-4 mr-2" />
           Start Repair
@@ -316,49 +316,48 @@ function VideoRepairContent() {
           variant="outline"
           onClick={handleClearFiles}
           disabled={selectedFiles.length === 0}
+          size="sm"
         >
           Clear Files
         </Button>
-        <span className="ml-2 text-muted-foreground text-sm">
+        <span className="text-muted-foreground text-xs">
           {selectedFiles.length} file{selectedFiles.length === 1 ? '' : 's'} selected
         </span>
       </div>
 
       {/* Main Content */}
-      <div className="grid gap-6 lg:grid-cols-4">
-        {/* Left Column - File Upload, Progress Tracking, and Previews */}
-        <div className="lg:col-span-3 space-y-6">
+      <div className="grid gap-4 lg:grid-cols-4">
+        {/* Left Column */}
+        <div className="lg:col-span-3 space-y-4">
           {/* File Upload */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileVideo className="w-5 h-5" />
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileVideo className="w-4 h-4" />
                 Upload Videos to Repair
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <DropZone
-                onFilesSelected={handleFilesSelected}
-              />
+            <CardContent className="pt-0">
+              <DropZone onFilesSelected={handleFilesSelected} />
             </CardContent>
           </Card>
 
           {/* Selected Files Preview */}
           {selectedFiles.length > 0 && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="w-5 h-5" />
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Eye className="w-4 h-4" />
                   Selected Files Preview
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="pt-0">
+                <div className="space-y-3">
                   {selectedFiles.map((file, index) => (
-                    <div key={index} className="border rounded-lg p-4">
+                    <div key={index} className="border rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium">{file.name}</span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="font-medium text-sm truncate">{file.name}</span>
+                        <span className="text-xs text-muted-foreground">
                           {(file.size / (1024 * 1024)).toFixed(2)} MB
                         </span>
                       </div>
@@ -377,14 +376,14 @@ function VideoRepairContent() {
           {/* Repair Progress */}
           {repairJobs.length > 0 && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Wrench className="w-5 h-5" />
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Wrench className="w-4 h-4" />
                   Repair Progress
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="pt-0">
+                <div className="space-y-3">
                   {repairJobs.map((job) => {
                     const isActive = job.status === 'analyzing' || job.status === 'repairing';
                     const isCompleted = job.status === 'completed';
@@ -392,15 +391,15 @@ function VideoRepairContent() {
                     const isCancelled = job.status === 'cancelled';
 
                     return (
-                      <div key={job.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-full ${getStatusColor(job.status)} text-white`}>
+                      <div key={job.id} className="border rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-full ${getStatusColor(job.status)} text-white`}>
                               {getStatusIcon(job.status)}
                             </div>
-                            <div>
-                              <h4 className="font-medium">{job.file.name}</h4>
-                              <p className="text-sm text-muted-foreground">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-medium text-sm truncate">{job.file.name}</h4>
+                              <p className="text-xs text-muted-foreground">
                                 {job.status === 'waiting' && 'Waiting to start...'}
                                 {job.status === 'analyzing' && 'Analyzing video file...'}
                                 {job.status === 'repairing' && 'Repairing video...'}

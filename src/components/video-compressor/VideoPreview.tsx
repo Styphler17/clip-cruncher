@@ -181,11 +181,11 @@ export function VideoPreview({
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faFileVideo} className="text-video-primary" />
-            <span className="truncate">{originalFile.name}</span>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center justify-between text-base">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <FontAwesomeIcon icon={faFileVideo} className="text-video-primary w-4 h-4 flex-shrink-0" />
+            <span className="truncate text-sm">{originalFile.name}</span>
           </div>
           {compressedBlob && (
             <DownloadDialog
@@ -194,9 +194,9 @@ export function VideoPreview({
             >
               <Button
                 size="sm"
-                className="bg-video-success hover:bg-video-success/90"
+                className="bg-video-success hover:bg-video-success/90 ml-2"
               >
-                <FontAwesomeIcon icon={faDownload} className="mr-2" />
+                <FontAwesomeIcon icon={faDownload} className="mr-1 w-3 h-3" />
                 Download
               </Button>
             </DownloadDialog>
@@ -204,73 +204,62 @@ export function VideoPreview({
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 pt-0">
         {/* Video Player */}
-        <div className={`relative bg-black rounded-lg overflow-hidden ${videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16] max-w-sm mx-auto'}`}>
+        <div className={`relative bg-black rounded-lg overflow-hidden ${videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16] max-w-xs mx-auto'}`}>
           {originalUrl && (
-                      <video
-            ref={videoRef}
-            src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
-            className="w-full h-full object-contain"
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleLoadedMetadata}
-            onVolumeChange={handleVolumeChange}
-            controls={true}
-            key={`${currentVideo}-${originalUrl}`}
-          />
+            <video
+              ref={videoRef}
+              src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
+              className="w-full h-full object-contain"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              onVolumeChange={handleVolumeChange}
+              controls={true}
+              key={`${currentVideo}-${originalUrl}`}
+            />
           )}
           
-          {/* Video Controls Overlay */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={togglePlay}
-                variant="secondary"
-                size="lg"
-                className="bg-white/90 hover:bg-white text-black"
-              >
-                <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-              </Button>
-              
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className="bg-white/90 hover:bg-white text-black"
-                  >
-                    <FontAwesomeIcon icon={faExpand} />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl w-full p-2">
-                  <DialogHeader>
-                    <DialogTitle className="truncate">{originalFile.name}</DialogTitle>
-                  </DialogHeader>
-                  <div className={`bg-black rounded-lg overflow-hidden ${videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16] max-w-sm mx-auto'}`}>
-                    {originalUrl && (
-                                              <video
-                          src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
-                          className="w-full h-full object-contain"
-                          controls={true}
-                          key={`dialog-${currentVideo}-${originalUrl}`}
-                        />
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+          {/* Fullscreen Button Overlay */}
+          <div className="absolute top-2 right-2 opacity-80 hover:opacity-100 transition-opacity">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-black/60 hover:bg-black/80 text-white border-0"
+                >
+                  <FontAwesomeIcon icon={faExpand} className="w-3 h-3" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl w-full p-2">
+                <DialogHeader>
+                  <DialogTitle className="truncate text-sm">{originalFile.name}</DialogTitle>
+                </DialogHeader>
+                <div className={`bg-black rounded-lg overflow-hidden ${videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-[9/16] max-w-sm mx-auto'}`}>
+                  {originalUrl && (
+                    <video
+                      src={currentVideo === 'original' ? originalUrl : compressedUrl || originalUrl}
+                      className="w-full h-full object-contain"
+                      controls={true}
+                      key={`dialog-${currentVideo}-${originalUrl}`}
+                    />
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
-        {/* Always Visible Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+        {/* Progress Bar */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration || 0)}</span>
           </div>
-           <div className="relative w-full h-2 bg-secondary rounded-full overflow-hidden cursor-pointer"
+           <div className="relative w-full h-1 bg-secondary rounded-full overflow-hidden cursor-pointer"
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const percent = (e.clientX - rect.left) / rect.width;

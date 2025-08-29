@@ -98,43 +98,43 @@ export function ProgressTracker({
   }
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-3", className)}>
       {/* Overall Progress */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center justify-between">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faPlay} className="text-video-primary" />
+              <FontAwesomeIcon icon={faPlay} className="text-video-primary w-4 h-4" />
               Compression Progress
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Badge variant="secondary">
-                {completedJobs.length}/{jobs.length} Complete
+            <div className="flex items-center gap-2 text-xs">
+              <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                {completedJobs.length}/{jobs.length}
               </Badge>
               {errorJobs.length > 0 && (
-                <Badge variant="destructive">
+                <Badge variant="destructive" className="text-xs px-1.5 py-0.5">
                   {errorJobs.length} Error{errorJobs.length > 1 ? 's' : ''}
                 </Badge>
               )}
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
+        <CardContent className="pt-0">
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
               <span>Overall Progress</span>
               <span>{Math.round(totalProgress)}%</span>
             </div>
-            <Progress value={totalProgress} className="h-2" />
+            <Progress value={totalProgress} className="h-1.5" />
             
               {activeJobs.length > 0 && (
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <FontAwesomeIcon icon={faClock} />
+                    <FontAwesomeIcon icon={faClock} className="w-3 h-3" />
                     {activeJobs.length} processing
                   </div>
                   <div className="flex items-center gap-1">
-                    <FontAwesomeIcon icon={faHdd} />
+                    <FontAwesomeIcon icon={faHdd} className="w-3 h-3" />
                     {formatBytes(jobs.reduce((sum, job) => sum + job.originalSize, 0))} total
                   </div>
                 </div>
@@ -144,25 +144,22 @@ export function ProgressTracker({
       </Card>
 
       {/* Individual Job Progress */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {jobs.map((job) => {
           const isActive = job.status === 'processing';
           const isCompleted = job.status === 'completed';
           const isError = job.status === 'error';
           const isWaiting = job.status === 'waiting';
 
-
-
-
           return (
-            <div key={job.id} className="space-y-3">
+            <div key={job.id} className="space-y-2">
               <Card className={cn(
                 "transition-smooth",
-                isActive && "border-video-primary shadow-md",
-                isCompleted && "border-video-success",
-                isError && "border-video-danger"
+                isActive && "border-video-primary/50 shadow-sm",
+                isCompleted && "border-video-success/50",
+                isError && "border-video-danger/50"
               )}>
-                <CardContent className="p-4">
+                <CardContent className="p-3">
                   <div className="flex items-start gap-3">
                     <div className={cn(
                       "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",

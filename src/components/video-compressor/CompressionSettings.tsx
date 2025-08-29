@@ -164,17 +164,17 @@ export function CompressionSettings({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Settings className="w-5 h-5 text-video-primary" />
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Settings className="w-4 h-4 text-video-primary" />
           Settings
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 pt-0">
         {/* Preset Selection */}
         <div>
-          <h3 className="text-sm font-medium mb-3">Choose a preset:</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <h3 className="text-sm font-medium mb-2">Choose a preset:</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {COMPRESSION_PRESETS.map((preset) => {
               const Icon = preset.icon;
               const isSelected = selectedPreset === preset.id;
@@ -210,19 +210,19 @@ export function CompressionSettings({
 
         {/* Selected Preset Info */}
         {selectedPresetData && (
-          <div className="p-3 bg-video-secondary/50 rounded-lg border">
-            <div className="flex items-start gap-3">
-              <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", selectedPresetData.color)}>
-                <selectedPresetData.icon className="w-5 h-5 text-white" />
+          <div className="p-2 bg-video-secondary/30 rounded-lg border">
+            <div className="flex items-center gap-2">
+              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", selectedPresetData.color)}>
+                <selectedPresetData.icon className="w-4 h-4 text-white" />
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-medium">{selectedPresetData.name}</h4>
-                  <Badge variant="secondary" className="text-xs">
-                    {selectedPresetData.estimatedReduction} reduction
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <h4 className="font-medium text-sm">{selectedPresetData.name}</h4>
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                    {selectedPresetData.estimatedReduction}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {selectedPresetData.description}
                 </p>
               </div>

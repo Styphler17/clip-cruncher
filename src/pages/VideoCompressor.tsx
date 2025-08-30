@@ -4,7 +4,7 @@ import { DropZone } from "@/components/video-compressor/DropZone";
 import { CompressionSettings, COMPRESSION_PRESETS } from "@/components/video-compressor/CompressionSettings";
 import { ProgressTracker, CompressionJob } from "@/components/video-compressor/ProgressTracker";
 import { VideoPreview } from "@/components/video-compressor/VideoPreview";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, Zap, Menu, Eye, FileVideo } from "lucide-react";
@@ -433,14 +433,28 @@ export default function VideoCompressor() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <VideoCompressorSidebar />
-        <div className="flex-1 relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 right-20 w-64 h-64 bg-video-primary/5 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 left-20 w-48 h-48 bg-video-accent/5 rounded-full blur-2xl animate-float" style={{animationDelay: '2s'}}></div>
+        <main className="flex-1 transition-all duration-300">
+          {/* Header with toggle */}
+          <header className="sticky top-0 z-40 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex h-14 items-center px-4">
+              <SidebarTrigger className="mr-3" />
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-video-success animate-pulse"></div>
+                <span className="text-sm font-medium text-foreground">ClipSqueeze Ready</span>
+              </div>
+            </div>
+          </header>
+          
+          {/* Main content */}
+          <div className="relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-20 right-20 w-64 h-64 bg-video-primary/5 rounded-full blur-3xl animate-float"></div>
+              <div className="absolute bottom-20 left-20 w-48 h-48 bg-video-accent/5 rounded-full blur-2xl animate-float" style={{animationDelay: '2s'}}></div>
+            </div>
+            <VideoCompressorContent />
           </div>
-          <VideoCompressorContent />
-        </div>
+        </main>
       </div>
     </SidebarProvider>
   );

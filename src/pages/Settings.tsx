@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
-import { Settings as SettingsIcon, Save, RotateCcw, Download, Trash2, Menu, Moon, Sun, Monitor } from "lucide-react";
+import { Settings as SettingsIcon, Save, RotateCcw, Download, Trash2, Moon, Sun, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
-import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
+import { SidebarToggle } from "@/components/layout/SidebarToggle";
 import { useToast } from "@/hooks/use-toast";
 import { getAppSettings, saveAppSettings, clearHistory, exportHistory, getCompressionHistory } from "@/lib/storage";
 import { COMPRESSION_PRESETS } from "@/components/video-compressor/CompressionSettings";
 
-function SettingsPageContent() {
-  const { toggleSidebar } = useSidebar();
+function Settings() {
   const { toast } = useToast();
   const [settings, setSettings] = useState({
     defaultPreset: 'balanced',
@@ -105,39 +103,36 @@ function SettingsPageContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      {/* Mobile header */}
-      <header className="h-14 border-b bg-background flex items-center px-4 lg:hidden">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={toggleSidebar}
-          className="mr-2"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        <h1 className="text-lg font-semibold">Settings</h1>
+    <>
+      {/* Header */}
+      <header className="page-header">
+        <div className="flex items-center gap-4">
+          <SidebarToggle className="lg:hidden" />
+          <h1 className="text-lg font-semibold">Settings</h1>
+        </div>
       </header>
 
-      <div className="flex-1 p-4 lg:p-6 space-y-6">
-        <div>
+      {/* Main Content */}
+      <div className="page-content space-y-8">
+        {/* Title Section */}
+        <section className="section-spacing">
           <h1 className="text-3xl font-bold text-foreground">Settings</h1>
           <p className="text-muted-foreground mt-2">
             Configure your ClipSqueeze preferences
           </p>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid-responsive grid-2 gap-6">
           {/* Compression Settings */}
-          <Card>
+          <Card className="card-module">
             <CardHeader>
-                              <CardTitle className="flex items-center gap-2">
-                  <SettingsIcon className="w-5 h-5" />
-                  Compression Settings
-                </CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <SettingsIcon className="w-5 h-5" />
+                Compression Settings
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label htmlFor="default-preset">Default Preset</Label>
                 <Select
                   value={settings.defaultPreset}
@@ -156,7 +151,7 @@ function SettingsPageContent() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label htmlFor="auto-save">Auto-save History</Label>
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -171,7 +166,7 @@ function SettingsPageContent() {
           </Card>
 
           {/* Appearance Settings */}
-          <Card>
+          <Card className="card-module">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sun className="w-5 h-5" />
@@ -179,7 +174,7 @@ function SettingsPageContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
+              <div className="form-group">
                 <Label htmlFor="theme">Theme</Label>
                 <Select
                   value={settings.theme}
@@ -214,7 +209,7 @@ function SettingsPageContent() {
           </Card>
 
           {/* Data Management */}
-          <Card>
+          <Card className="card-module">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Download className="w-5 h-5" />
@@ -244,12 +239,12 @@ function SettingsPageContent() {
           </Card>
 
           {/* Actions */}
-          <Card>
+          <Card className="card-module">
             <CardHeader>
-                              <CardTitle className="flex items-center gap-2">
-                  <SettingsIcon className="w-5 h-5" />
-                  Actions
-                </CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <SettingsIcon className="w-5 h-5" />
+                Actions
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col gap-2">
@@ -273,17 +268,8 @@ function SettingsPageContent() {
           </Card>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
-export default function Settings() {
-  return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <VideoCompressorSidebar />
-        <SettingsPageContent />
-      </div>
-    </SidebarProvider>
-  );
-} 
+export default Settings;

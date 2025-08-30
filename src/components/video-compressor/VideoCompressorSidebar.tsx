@@ -1,5 +1,7 @@
 import { FaPlay, FaHistory, FaQuestionCircle, FaInfoCircle, FaCog, FaWrench } from 'react-icons/fa';
 import { NavLink } from "react-router-dom";
+import { SidebarToggle } from "@/components/layout/SidebarToggle";
+import { useSidebarToggle } from "@/hooks/useSidebarToggle";
 
 import {
   Sidebar,
@@ -10,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 
 const navigationItems = [
@@ -53,8 +54,7 @@ const navigationItems = [
 ];
 
 export function VideoCompressorSidebar() {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { isCollapsed } = useSidebarToggle();
 
   return (
     <Sidebar 
@@ -70,7 +70,7 @@ export function VideoCompressorSidebar() {
         </div>
         
         {/* Logo Section */}
-        <div className="relative p-6 border-b border-sidebar-border/50 flex items-center justify-center">
+        <div className="relative p-6 border-b border-sidebar-border/50 flex items-center justify-between">
           <div className="flex items-center gap-3 group">
             <div className="relative">
               <img 
@@ -87,6 +87,7 @@ export function VideoCompressorSidebar() {
               </div>
             )}
           </div>
+          <SidebarToggle />
         </div>
 
         <SidebarGroup className="flex-1 px-3 py-4">

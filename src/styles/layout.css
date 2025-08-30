@@ -1,0 +1,135 @@
+/* Layout System - CSS Grid based app shell */
+
+/* Spacing Scale */
+:root {
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-overlay: 1000;
+  --z-modal: 1100;
+  
+  /* Layout Dimensions */
+  --sidebar-width-expanded: 260px;
+  --sidebar-width-collapsed: 72px;
+  --header-height: 56px;
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+}
+
+/* App Shell - CSS Grid Layout */
+.app-shell {
+  display: grid;
+  min-height: 100dvh;
+  width: 100vw;
+  transition: grid-template-columns 0.2s ease;
+}
+
+/* Grid States */
+.app-shell[data-sidebar="expanded"] {
+  grid-template-columns: var(--sidebar-width-expanded) 1fr;
+}
+
+.app-shell[data-sidebar="collapsed"] {
+  grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+}
+
+/* Sidebar */
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: auto;
+  z-index: var(--z-sticky);
+}
+
+/* Main Content */
+.app-main {
+  min-width: 0; /* Prevent overflow */
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global Container */
+.page-container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+  width: 100%;
+}
+
+/* Page Header */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-6);
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(20px);
+}
+
+/* Page Content */
+.page-content {
+  flex: 1;
+  padding: var(--space-6);
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-shell[data-sidebar="expanded"] .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-overlay);
+    width: var(--sidebar-width-expanded);
+  }
+  
+  .app-shell[data-sidebar="expanded"]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-overlay) - 1);
+  }
+  
+  .app-shell[data-sidebar="collapsed"] .app-sidebar {
+    display: none;
+  }
+}
+
+/* Smaller mobile screens */
+@media (max-width: 600px) {
+  .page-container {
+    padding-inline: var(--space-4);
+  }
+  
+  .page-header {
+    padding-inline: var(--space-4);
+  }
+  
+  .page-content {
+    padding: var(--space-4);
+  }
+}

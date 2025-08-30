@@ -1,10 +1,9 @@
-import { Upload, Settings, Download, Zap, FileVideo, Clock, HardDrive, Cpu, Menu, Play } from "lucide-react";
+import { Upload, Settings, Download, Zap, FileVideo, Clock, HardDrive, Cpu, Play } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
-import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
+import { SidebarToggle } from "@/components/layout/SidebarToggle";
 import { useNavigate } from "react-router-dom";
 
 const steps = [
@@ -106,32 +105,27 @@ const tips = [
   }
 ];
 
-function HowToUseContent() {
-  const { toggleSidebar } = useSidebar();
+function HowToUse() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex-1 flex flex-col">
-      {/* Mobile header */}
-      <header className="h-14 border-b bg-background flex items-center px-4 lg:hidden">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={toggleSidebar}
-          className="mr-2"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        <h1 className="text-lg font-semibold">How To Use</h1>
+    <>
+      {/* Header */}
+      <header className="page-header">
+        <div className="flex items-center gap-4">
+          <SidebarToggle className="lg:hidden" />
+          <h1 className="text-lg font-semibold">How To Use</h1>
+        </div>
       </header>
 
-      <div className="flex-1 p-4 lg:p-6 space-y-8">
-        <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">How to Use Video Compressor</h1>
-        <p className="text-muted-foreground text-lg">
-          Learn how to compress your videos efficiently with our step-by-step guide
-        </p>
-        <div className="mt-4">
+      {/* Main Content */}
+      <div className="page-content space-y-8">
+        {/* Title Section */}
+        <section className="section-spacing text-center">
+          <h1 className="text-3xl font-bold text-foreground mb-2">How to Use Video Compressor</h1>
+          <p className="text-muted-foreground text-lg mb-6">
+            Learn how to compress your videos efficiently with our step-by-step guide
+          </p>
           <Button
             onClick={() => navigate('/')}
             size="lg"
@@ -140,131 +134,121 @@ function HowToUseContent() {
             <Play className="w-4 h-4 mr-2" />
             Start Compressing
           </Button>
-        </div>
-      </div>
+        </section>
 
-      {/* Step-by-step guide */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Step-by-Step Guide</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {steps.map((step) => (
-            <Card key={step.step} className="relative">
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-video-primary text-white flex items-center justify-center font-bold">
-                    {step.step}
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2">
-                      <step.icon className="w-5 h-5" />
-                      {step.title}
-                    </CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">{step.description}</p>
-                <div className="space-y-2">
-                  {step.tips.map((tip, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-video-primary mt-2 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">{tip}</span>
+        {/* Step-by-step guide */}
+        <section className="section-spacing">
+          <h2 className="text-2xl font-semibold mb-6">Step-by-Step Guide</h2>
+          <div className="grid-responsive grid-2">
+            {steps.map((step) => (
+              <Card key={step.step} className="card-module">
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-video-primary text-white flex items-center justify-center font-bold">
+                      {step.step}
                     </div>
-                  ))}
+                    <div className="flex-1">
+                      <CardTitle className="flex items-center gap-2">
+                        <step.icon className="w-5 h-5" />
+                        {step.title}
+                      </CardTitle>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">{step.description}</p>
+                  <div className="space-y-2">
+                    {step.tips.map((tip, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-video-primary mt-2 flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground">{tip}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <Separator />
+
+        {/* Quality Presets */}
+        <section className="section-spacing">
+          <h2 className="text-2xl font-semibold mb-6">Compression Presets Explained</h2>
+          <div className="grid-responsive grid-3">
+            {presets.map((preset) => (
+              <Card key={preset.name}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{preset.name}</CardTitle>
+                  <div className="flex gap-2">
+                    <Badge variant="secondary">{preset.reduction} smaller</Badge>
+                    <Badge variant="outline">{preset.quality}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-3">{preset.description}</p>
+                  <div className="text-sm">
+                    <span className="font-medium">Best for:</span>
+                    <span className="text-muted-foreground ml-1">{preset.useCase}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <Separator />
+
+        {/* Pro Tips */}
+        <section className="section-spacing">
+          <h2 className="text-2xl font-semibold mb-6">Pro Tips & Best Practices</h2>
+          <div className="grid-responsive grid-2">
+            {tips.map((tip, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <tip.icon className="w-5 h-5 text-video-primary" />
+                    {tip.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{tip.content}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Technical Information */}
+        <section className="section-spacing">
+          <h2 className="text-2xl font-semibold mb-6">Technical Information</h2>
+          <Card className="card-module">
+            <CardContent>
+              <div className="grid-responsive grid-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-3">Supported Formats</h3>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>• MP4, AVI, MOV, MKV, WMV</p>
+                    <p>• FLV, WebM, 3GP, OGV, M4V</p>
+                    <p>• QT and other common formats</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <Separator />
-
-      {/* Quality Presets */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Compression Presets Explained</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {presets.map((preset) => (
-            <Card key={preset.name}>
-              <CardHeader>
-                <CardTitle className="text-lg">{preset.name}</CardTitle>
-                <div className="flex gap-2">
-                  <Badge variant="secondary">{preset.reduction} smaller</Badge>
-                  <Badge variant="outline">{preset.quality}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-3">{preset.description}</p>
-                <div className="text-sm">
-                  <span className="font-medium">Best for:</span>
-                  <span className="text-muted-foreground ml-1">{preset.useCase}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <Separator />
-
-      {/* Pro Tips */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Pro Tips & Best Practices</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tips.map((tip, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <tip.icon className="w-5 h-5 text-video-primary" />
-                  {tip.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{tip.content}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Technical Information */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Technical Information</h2>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold mb-3">Supported Formats</h3>
-                <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>• MP4, AVI, MOV, MKV, WMV</p>
-                  <p>• FLV, WebM, 3GP, OGV, M4V</p>
-                  <p>• QT and other common formats</p>
+                <div>
+                  <h3 className="font-semibold mb-3">Processing Details</h3>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>• 100% client-side processing</p>
+                    <p>• No file uploads to servers</p>
+                    <p>• WebAssembly-powered compression</p>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h3 className="font-semibold mb-3">Processing Details</h3>
-                <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>• 100% client-side processing</p>
-                  <p>• No file uploads to servers</p>
-                  <p>• WebAssembly-powered compression</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
+            </CardContent>
+          </Card>
+        </section>
       </div>
-    </div>
+    </>
   );
 }
 
-export default function HowToUse() {
-  return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <VideoCompressorSidebar />
-        <HowToUseContent />
-      </div>
-    </SidebarProvider>
-  );
-}
+export default HowToUse;

@@ -1,0 +1,120 @@
+/* Component Styles */
+
+/* Cards and Modules */
+.card-module {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  padding: var(--space-7);
+  gap: var(--space-6);
+}
+
+.card-module h2,
+.card-module h3 {
+  margin: 0 0 var(--space-4) 0;
+}
+
+/* Buttons */
+.btn-base {
+  min-height: 40px;
+  min-width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: calc(var(--radius) - 2px);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-sm {
+  height: 36px;
+  padding-inline: var(--space-3);
+  font-size: 0.875rem;
+}
+
+.btn-md {
+  height: 40px;
+  padding-inline: var(--space-4);
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  height: 44px;
+  padding-inline: var(--space-6);
+  font-size: 1rem;
+}
+
+/* Forms */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-control {
+  min-height: 40px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Focus States */
+.focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Grid Layouts */
+.grid-responsive {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.grid-1 { grid-template-columns: 1fr; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* Flex Layouts */
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.flex-start {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+/* Section Spacing */
+.section-spacing {
+  margin-bottom: var(--space-8);
+}
+
+.section-spacing:last-child {
+  margin-bottom: 0;
+}

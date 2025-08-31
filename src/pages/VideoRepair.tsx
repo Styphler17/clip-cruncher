@@ -1,16 +1,13 @@
 import { useState, useCallback } from "react";
-import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
 import { DropZone } from "@/components/video-compressor/DropZone";
 import { VideoPreview } from "@/components/video-compressor/VideoPreview";
 import { DownloadDialog } from "@/components/video-compressor/DownloadDialog";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
   Wrench, 
-  Menu, 
   Eye, 
   AlertTriangle, 
   CheckCircle, 
@@ -41,8 +38,7 @@ interface RepairJob {
   repairType: 'metadata' | 'container' | 'full' | 'extract';
 }
 
-function VideoRepairContent() {
-  const { toggleSidebar } = useSidebar();
+export default function VideoRepair() {
   const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [repairJobs, setRepairJobs] = useState<RepairJob[]>([]);
@@ -292,14 +288,6 @@ function VideoRepairContent() {
             Fix corrupted videos, metadata issues, and playback problems
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleSidebar}
-          className="lg:hidden"
-        >
-          <Menu className="w-4 h-4" />
-        </Button>
       </div>
 
       {/* Action Bar */}
@@ -576,14 +564,3 @@ function VideoRepairContent() {
     </div>
   );
 }
-
-export default function VideoRepair() {
-  return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
-        <VideoCompressorSidebar />
-        <VideoRepairContent />
-      </div>
-    </SidebarProvider>
-  );
-} 

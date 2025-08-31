@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { VideoCompressorSidebar } from "@/components/video-compressor/VideoCompressorSidebar";
-import { useSidebarToggle } from "@/hooks/useSidebarToggle";
+import { useSidebar } from "@/components/ui/sidebar";
 import "@/styles/layout.css";
 import "@/styles/components.css";
 import "@/styles/utilities.css";
@@ -10,16 +10,14 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { isCollapsed } = useSidebarToggle();
+  const { state } = useSidebar();
 
   return (
     <div 
       className="app-shell"
-      data-sidebar={isCollapsed ? "collapsed" : "expanded"}
+      data-sidebar={state === "collapsed" ? "collapsed" : "expanded"}
     >
-      <aside className="app-sidebar" role="navigation">
-        <VideoCompressorSidebar />
-      </aside>
+      <VideoCompressorSidebar />
       <main className="app-main">
         {children}
       </main>

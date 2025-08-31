@@ -1,7 +1,7 @@
 import { FaPlay, FaHistory, FaQuestionCircle, FaInfoCircle, FaCog, FaWrench } from 'react-icons/fa';
 import { NavLink } from "react-router-dom";
 import { SidebarToggle } from "@/components/layout/SidebarToggle";
-import { useSidebarToggle } from "@/hooks/useSidebarToggle";
+import { useSidebar } from "@/components/ui/sidebar";
 
 import {
   Sidebar,
@@ -54,7 +54,8 @@ const navigationItems = [
 ];
 
 export function VideoCompressorSidebar() {
-  const { isCollapsed } = useSidebarToggle();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar 

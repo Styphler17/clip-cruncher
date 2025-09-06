@@ -54,12 +54,10 @@ export default function VideoCompressor() {
                   let finalCompressedSize = 0;
                   
                   try {
-                    const originalArrayBuffer = await job.file.arrayBuffer();
-                    const originalData = new Uint8Array(originalArrayBuffer);
+                    // Use slice directly on the file to avoid loading entire large file into memory
                     const targetSize = Math.max(compressedSize, 1024 * 1024);
-                    const compressedData = originalData.slice(0, targetSize);
-                     // Always create MP4 blobs in simulation for better compatibility
-                     compressedBlob = new Blob([compressedData], { type: 'video/mp4' });
+                    // Always create MP4 blobs in simulation for better compatibility
+                    compressedBlob = new Blob([job.file.slice(0, targetSize)], { type: 'video/mp4' });
                     finalCompressedSize = compressedBlob.size;
                   } catch (error) {
                     if (error instanceof Error && error.name === "NotReadableError") {

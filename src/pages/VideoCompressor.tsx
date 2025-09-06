@@ -38,87 +38,88 @@ export default function VideoCompressor() {
         : job
     ));
     
-    const progressInterval = setInterval(() => {
+    const progressInterval = setInterval(async () => {
       setCompressionJobs(prev => {
         const updated = prev.map(job => {
           if (job.id === jobId && job.status === 'processing') {
             const newProgress = Math.min(job.progress + Math.random() * 10, 100);
-            if (newProgress >= 100) {
-              clearInterval(progressInterval);
-              (async () => {
-                try {
-                  if (!job.file) throw new Error("No file found for this job.");
-                  const compressionRatio = Math.random() * 0.4 + 0.2;
-                  const compressedSize = Math.floor(job.originalSize * (1 - compressionRatio));
-                  let compressedBlob: Blob;
-                  let finalCompressedSize = 0;
-                  
-                  try {
-                    // Use slice directly on the file to avoid loading entire large file into memory
-                    const targetSize = Math.max(compressedSize, 1024 * 1024);
-                    // Always create MP4 blobs in simulation for better compatibility
-                    compressedBlob = new Blob([job.file.slice(0, targetSize)], { type: 'video/mp4' });
-                    finalCompressedSize = compressedBlob.size;
-                  } catch (error) {
-                    if (error instanceof Error && error.name === "NotReadableError") {
-                      toast({
-                        title: "File Read Error",
-                        description: "The selected file could not be read. Please re-upload the file and try again.",
-                        variant: "destructive",
-                      });
-                      setCompressionJobs(prev => prev.map(j => 
-                        j.id === jobId ? { ...j, status: 'error' as const, error: 'File could not be read' } : j
-                      ));
-                      return;
-                    } else {
-                      throw error;
-                    }
-                  }
-                  
-                  const finalCompressionRatio = Math.min(Math.max(compressionRatio, 0.1), 0.9);
-                  const completedJob = {
-                    ...job,
-                    status: 'completed' as const,
-                    progress: 100,
-                    endTime: Date.now(),
-                    compressedSize: finalCompressedSize,
-                    outputBlob: compressedBlob
-                  };
-                  
-                  setCompressionJobs(prev => prev.map(j => 
-                    j.id === jobId ? completedJob : j
-                  ));
-                  
-                  addToHistory({
-                    fileName: job.file.name,
-                    originalSize: job.originalSize,
-                    compressedSize: finalCompressedSize,
-                    compressionRatio: finalCompressionRatio * 100,
-                    preset: job.settings.preset,
-                    duration: "Unknown",
-                    status: 'completed',
-                    fileType: job.file.type,
-                    settings: job.settings
-                  });
-                } catch (error) {
-                  toast({
-                    title: "Compression Failed",
-                    description: "An error occurred during compression. Please try again.",
-                    variant: "destructive",
-                  });
-                  setCompressionJobs(prev => prev.map(j => 
-                    j.id === jobId ? { ...j, status: 'error' as const, error: 'Compression failed' } : j
-                  ));
-                }
-              })();
-              return { ...job, progress: 100 };
-            }
             return { ...job, progress: newProgress };
           }
           return job;
         });
         return updated;
       });
+
+      // Check if we've reached 100% and complete the job
+      const currentJob = compressionJobs.find(j => j.id === jobId);
+      if (currentJob && currentJob.progress >= 100) {
+        clearInterval(progressInterval);
+        
+        try {
+          if (!currentJob.file) throw new Error("No file found for this job.");
+          const compressionRatio = Math.random() * 0.4 + 0.2;
+          const compressedSize = Math.floor(currentJob.originalSize * (1 - compressionRatio));
+          let compressedBlob: Blob;
+          let finalCompressedSize = 0;
+          
+          try {
+            // Use slice directly on the file to avoid loading entire large file into memory
+            const targetSize = Math.max(compressedSize, 1024 * 1024);
+            // Always create MP4 blobs in simulation for better compatibility
+            compressedBlob = new Blob([currentJob.file.slice(0, targetSize)], { type: 'video/mp4' });
+            finalCompressedSize = compressedBlob.size;
+          } catch (error) {
+            if (error instanceof Error && error.name === "NotReadableError") {
+              toast({
+                title: "File Read Error",
+                description: "The selected file could not be read. Please re-upload the file and try again.",
+                variant: "destructive",
+              });
+              setCompressionJobs(prev => prev.map(j => 
+                j.id === jobId ? { ...j, status: 'error' as const, error: 'File could not be read' } : j
+              ));
+              return;
+            } else {
+              throw error;
+            }
+          }
+          
+          const finalCompressionRatio = Math.min(Math.max(compressionRatio, 0.1), 0.9);
+          const completedJob = {
+            ...currentJob,
+            status: 'completed' as const,
+            progress: 100,
+            endTime: Date.now(),
+            compressedSize: finalCompressedSize,
+            outputBlob: compressedBlob
+          };
+          
+          setCompressionJobs(prev => prev.map(j => 
+            j.id === jobId ? completedJob : j
+          ));
+          
+          addToHistory({
+            fileName: currentJob.file.name,
+            originalSize: currentJob.originalSize,
+            compressedSize: finalCompressedSize,
+            compressionRatio: finalCompressionRatio * 100,
+            preset: currentJob.settings.preset,
+            duration: "Unknown",
+            status: 'completed',
+            fileType: currentJob.file.type,
+            settings: currentJob.settings
+          });
+        } catch (error) {
+          toast({
+            title: "Compression Failed",
+            description: "An error occurred during compression. Please try again.",
+            variant: "destructive",
+          });
+          setCompressionJobs(prev => prev.map(j => 
+            j.id === jobId ? { ...j, status: 'error' as const, error: 'Compression failed' } : j
+          ));
+        }
+      }
     }, 200);
   }, [toast]);
 
